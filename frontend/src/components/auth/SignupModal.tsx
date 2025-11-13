@@ -16,7 +16,7 @@ interface SignupModalProps {
 }
 
 export const SignupModal = ({ isOpen, onClose, onSwitchToLogin }: SignupModalProps) => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +29,7 @@ export const SignupModal = ({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
     setIsLoading(true);
 
     try {
-      await signup(email, password, name);
+      await signup(username, email, password);
       toast.success("Account created successfully!");
       onClose();
       navigate("/dashboard");
@@ -75,15 +75,15 @@ export const SignupModal = ({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="username">Username</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      id="name"
+                      id="username"
                       type="text"
-                      placeholder="John Doe"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      placeholder="johndoe"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       className="pl-10"
                       required
                     />
@@ -118,7 +118,7 @@ export const SignupModal = ({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 pr-10"
                       required
-                      minLength={6}
+                      minLength={8}
                     />
                     <button
                       type="button"
@@ -128,7 +128,7 @@ export const SignupModal = ({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  <p className="text-xs text-muted-foreground">Must be at least 6 characters</p>
+                  <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
