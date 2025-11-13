@@ -19,6 +19,7 @@ class Currency(str, Enum):
     USD = "USD"
     EUR = "EUR"
     GBP = "GBP"
+    NGN = "NGN"
 
 
 class UserRole(str, Enum):
