@@ -47,20 +47,46 @@ const Dashboard = () => {
     }
   };
 
-  const handleDownload = (invoiceId: number) => {
-    window.open(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoiceId}/pdf`, '_blank');
+  const handleDownload = async (invoiceId: number, invoiceNumber: string) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoiceId}/pdf`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${invoiceNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success("Invoice downloaded successfully!");
+    } catch (error) {
+      toast.error("Failed to download invoice");
+    }
   };
 
-  const handleSend = (invoiceId: number) => {
-    toast.info(`Send invoice functionality coming soon`);
+  const handleSend = async (invoiceId: number) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoiceId}/send`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      toast.success("Invoice sent successfully!");
+    } catch (error) {
+      toast.error("Failed to send invoice");
+    }
   };
 
   const handleView = (invoiceId: number) => {
-    navigate(`/dashboard/invoices`);
+    toast.info("View invoice details coming soon");
   };
 
   const handleEdit = (invoiceId: number) => {
-    toast.info(`Edit invoice functionality coming soon`);
+    toast.info("Edit invoice coming soon");
   };
 
   const handleDelete = async (invoiceId: number) => {
@@ -213,7 +239,7 @@ const Dashboard = () => {
                                       variant="ghost" 
                                       size="icon" 
                                       className="h-7 w-7 sm:h-8 sm:w-8"
-                                      onClick={() => handleDownload(invoice.id)}
+                                      onClick={() => handleDownload(invoice.id, invoice.invoice_number)}
                                     >
                                       <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                                     </Button>
