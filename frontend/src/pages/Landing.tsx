@@ -72,34 +72,6 @@ const Landing = () => {
     },
   ];
 
-  const pricingPlans = [
-    {
-      name: "Free",
-      price: "$0",
-      description: "Perfect for getting started",
-      features: [
-        "5 invoices per month",
-        "Basic templates",
-        "Client management",
-        "Email support",
-      ],
-    },
-    {
-      name: "Pro",
-      price: "$19",
-      description: "For growing businesses",
-      features: [
-        "Unlimited invoices",
-        "Premium templates",
-        "Payment integration",
-        "Automated reminders",
-        "Priority support",
-        "Custom branding",
-      ],
-      popular: true,
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Navigation */}
@@ -110,16 +82,18 @@ const Landing = () => {
               <FileText className="w-6 h-6 text-primary" />
               <span className="text-xl font-bold">Invoicely</span>
             </div>
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center justify-center gap-6 flex-1">
               <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">
                 Features
               </a>
-              <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
-                Pricing
+              <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">
+                FAQ
               </a>
               <a href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors">
                 Testimonials
               </a>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={toggleTheme}>
                 {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               </Button>
@@ -160,11 +134,11 @@ const Landing = () => {
                 Features
               </a>
               <a
-                href="#pricing"
+                href="#faq"
                 className="text-sm font-medium hover:text-primary transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Pricing
+                FAQ
               </a>
               <a
                 href="#testimonials"
@@ -297,9 +271,9 @@ const Landing = () => {
         </div>
       </motion.section>
 
-      {/* Pricing */}
+      {/* FAQ */}
       <motion.section
-        id="pricing"
+        id="faq"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -307,48 +281,43 @@ const Landing = () => {
         className="container mx-auto px-4 py-16 sm:py-24"
       >
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose the plan that's right for your business
+            Everything you need to know about Invoice Generator
           </p>
         </motion.div>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {pricingPlans.map((plan, index) => (
+        <div className="max-w-3xl mx-auto space-y-4">
+          {[
+            {
+              question: "How do I create my first invoice?",
+              answer: "Simply sign up for a free account, add your client details, and use our intuitive invoice builder to create professional invoices in minutes."
+            },
+            {
+              question: "Can I customize invoice templates?",
+              answer: "Yes! You can customize templates with your brand colors, logo, and payment terms. Premium users get access to advanced customization options."
+            },
+            {
+              question: "How do I get paid?",
+              answer: "Add payment links to your invoices and clients can pay directly. We support multiple payment methods including bank transfers and online payments."
+            },
+            {
+              question: "Is my data secure?",
+              answer: "Absolutely. We use industry-standard encryption to protect your data. All information is stored securely and backed up regularly."
+            },
+            {
+              question: "Can I send invoices via email?",
+              answer: "Yes! You can send invoices directly to your clients via email with PDF attachments. Track when they're opened and viewed."
+            },
+            {
+              question: "What currencies are supported?",
+              answer: "We support multiple currencies including USD, EUR, GBP, and NGN. You can set your preferred currency in your account settings."
+            }
+          ].map((faq, index) => (
             <motion.div key={index} variants={fadeIn}>
-              <Card
-                className={`shadow-card border-border relative ${
-                  plan.popular ? "border-primary shadow-soft" : ""
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-                <CardContent className="p-6 sm:p-8">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-muted-foreground mb-6">{plan.description}</p>
-                  <div className="mb-6">
-                    <span className="text-4xl sm:text-5xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className="w-full"
-                    variant={plan.popular ? "hero" : "outline"}
-                    onClick={() => setSignupModalOpen(true)}
-                  >
-                    Get Started
-                  </Button>
+              <Card className="shadow-card border-border">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
+                  <p className="text-muted-foreground">{faq.answer}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -369,8 +338,8 @@ const Landing = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="#pricing" className="hover:text-primary transition-colors">
-                    Pricing
+                  <a href="#faq" className="hover:text-primary transition-colors">
+                    FAQ
                   </a>
                 </li>
                 <li>
