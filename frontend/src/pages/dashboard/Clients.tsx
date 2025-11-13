@@ -11,7 +11,7 @@ import { useClients, useDeleteClient } from "@/hooks/useClients";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Clients = () => {
-  const { data: clientsData, isLoading } = useClients({ page: 1, page_size: 100 });
+  const { data: clientsData, isLoading } = useClients(1, 100);
   const deleteClient = useDeleteClient();
 
   const clients = clientsData?.items || [];
