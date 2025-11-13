@@ -18,25 +18,10 @@ from app.routes.template import router as template_router
 setup_logging()
 
 description = """
-## Invoice Generator API
+Invoice Generator API
 
 A modern invoice generation platform with user authentication, client management, 
 and automated invoice creation with PDF generation and email delivery.
-
-### Features
-
-* **Authentication** - JWT-based user authentication with refresh tokens
-* **Client Management** - Create and manage customer information
-* **Invoice Management** - Create, update, and track invoices with multiple statuses
-* **PDF Generation** - Generate professional PDF invoices
-* **Email Delivery** - Send invoices via email with PDF attachments
-* **Templates** - Customize invoice templates with branding
-* **Multi-Currency** - Support for USD, EUR, and GBP
-
-### Authentication
-
-All endpoints except `/health` and authentication endpoints require a Bearer token.
-Include the token in the Authorization header: `Authorization: Bearer <token>`
 """
 
 app = FastAPI(
