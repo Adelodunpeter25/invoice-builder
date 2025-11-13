@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Filter, Download, Send, MoreVertical } from "lucide-react";
+import { Plus, Search, Filter, Download, Send, MoreVertical, Eye, Edit, Trash } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CreateInvoiceModal } from "@/components/dashboard/CreateInvoiceModal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/motion";
 import { toast } from "sonner";
+import { useInvoices, useDeleteInvoice, useSendInvoice } from "@/hooks/useInvoices";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface Invoice {
   id: string;
