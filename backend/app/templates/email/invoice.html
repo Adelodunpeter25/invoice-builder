@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice_number }}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px;">
+        <h1 style="color: #2c3e50; margin-bottom: 10px;">Invoice {{ invoice_number }}</h1>
+        <p style="color: #7f8c8d; margin-top: 0;">From {{ company_name }}</p>
+        
+        <div style="background-color: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 10px 0;"><strong>Dear {{ client_name }},</strong></p>
+            
+            <p>Thank you for your business! Please find your invoice attached to this email.</p>
+            
+            <div style="background-color: #e8f4f8; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0;">
+                <p style="margin: 5px 0;"><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+                <p style="margin: 5px 0;"><strong>Issue Date:</strong> {{ issue_date }}</p>
+                <p style="margin: 5px 0;"><strong>Due Date:</strong> {{ due_date }}</p>
+                <p style="margin: 5px 0;"><strong>Amount:</strong> {{ currency }} {{ amount }}</p>
+            </div>
+            
+            {% if payment_terms %}
+            <div style="margin: 20px 0;">
+                <p style="margin: 5px 0;"><strong>Payment Terms:</strong></p>
+                <p style="color: #555;">{{ payment_terms }}</p>
+            </div>
+            {% endif %}
+            
+            <p>If you have any questions about this invoice, please don't hesitate to contact us.</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p style="color: #7f8c8d; font-size: 14px; margin: 5px 0;">Best regards,</p>
+            <p style="color: #2c3e50; font-weight: bold; margin: 5px 0;">{{ company_name }}</p>
+        </div>
+    </div>
+</body>
+</html>

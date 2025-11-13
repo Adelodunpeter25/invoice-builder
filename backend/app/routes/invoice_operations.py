@@ -50,9 +50,9 @@ async def send_invoice(
     pdf_bytes = generate_invoice_pdf(invoice, client, user)
     
     success = await send_invoice_email(
-        to_email=client.email,
-        invoice_number=invoice.invoice_number,
-        client_name=client.name,
+        invoice=invoice,
+        client=client,
+        company_name=user.company_name or user.username,
         pdf_content=pdf_bytes,
     )
     
