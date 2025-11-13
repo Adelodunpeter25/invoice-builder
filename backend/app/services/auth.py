@@ -87,6 +87,9 @@ async def update_user(db: AsyncSession, user_id: int, data: UserUpdate) -> User:
     
     if data.company_phone is not None:
         user.company_phone = data.company_phone
+    
+    if data.preferred_currency is not None:
+        user.preferred_currency = data.preferred_currency
 
     if data.new_password:
         if not data.current_password:

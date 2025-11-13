@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +23,7 @@ const Settings = () => {
   const [companyCity, setCompanyCity] = useState(user?.company_city || "");
   const [companyCountry, setCompanyCountry] = useState(user?.company_country || "");
   const [companyPhone, setCompanyPhone] = useState(user?.company_phone || "");
+  const [preferredCurrency, setPreferredCurrency] = useState(user?.preferred_currency || "NGN");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,7 +39,8 @@ const Settings = () => {
         company_address: companyAddress,
         company_city: companyCity,
         company_country: companyCountry,
-        company_phone: companyPhone
+        company_phone: companyPhone,
+        preferred_currency: preferredCurrency
       });
       await refetchUser();
       toast.success("Profile updated successfully!");
@@ -131,6 +134,20 @@ const Settings = () => {
                     <div className="space-y-2">
                       <Label htmlFor="phone">Company Phone</Label>
                       <Input id="phone" value={companyPhone} onChange={(e) => setCompanyPhone(e.target.value)} placeholder="+1234567890" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">Preferred Currency</Label>
+                      <Select value={preferredCurrency} onValueChange={setPreferredCurrency}>
+                        <SelectTrigger id="currency">
+                          <SelectValue placeholder="Select currency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
+                          <SelectItem value="USD">USD - US Dollar</SelectItem>
+                          <SelectItem value="EUR">EUR - Euro</SelectItem>
+                          <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <Button onClick={handleSaveProfile} disabled={updateUser.isPending}>
                       {updateUser.isPending ? "Saving..." : "Save Changes"}

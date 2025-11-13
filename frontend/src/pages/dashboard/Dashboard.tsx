@@ -13,6 +13,7 @@ import { fadeIn, staggerContainer } from "@/lib/motion";
 import { toast } from "sonner";
 import { useInvoices, useDeleteInvoice } from "@/hooks/useInvoices";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const Dashboard = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const deleteInvoice = useDeleteInvoice();
 
   const invoices = invoicesData?.items || [];
+  const currencySymbol = getCurrencySymbol(user?.preferred_currency || 'NGN');
 
   const stats = {
     totalRevenue: invoices.reduce((sum: number, inv: any) => sum + inv.total_amount, 0),
@@ -147,7 +149,7 @@ const Dashboard = () => {
                     <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl sm:text-3xl font-bold">₦{stats.totalRevenue.toLocaleString()}</div>
+                    <div className="text-2xl sm:text-3xl font-bold">{currencySymbol}{stats.totalRevenue.toLocaleString()}</div>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">All time earnings</p>
                   </CardContent>
                 </Card>
@@ -171,7 +173,7 @@ const Dashboard = () => {
                     <CardTitle className="text-sm font-medium text-muted-foreground">Pending Amount</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl sm:text-3xl font-bold">₦{stats.pendingAmount.toLocaleString()}</div>
+                    <div className="text-2xl sm:text-3xl font-bold">{currencySymbol}{stats.pendingAmount.toLocaleString()}</div>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">Awaiting payment</p>
                   </CardContent>
                 </Card>
@@ -224,7 +226,7 @@ const Dashboard = () => {
                               <tr key={invoice.id} className="text-xs sm:text-sm">
                                 <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
                                 <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
-                                <td className="py-4 px-2 font-semibold">₦{invoice.total_amount.toLocaleString()}</td>
+                                <td className="py-4 px-2 font-semibold">{currencySymbol}{invoice.total_amount.toLocaleString()}</td>
                                 <td className="py-4 px-2">
                                   <Badge className={getStatusColor(invoice.status)} variant="secondary">
                                     {invoice.status}

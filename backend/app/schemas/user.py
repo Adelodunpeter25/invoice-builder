@@ -16,6 +16,7 @@ class UserResponse(BaseModel):
     company_city: str | None
     company_country: str | None
     company_phone: str | None
+    preferred_currency: str
     is_active: bool
     created_at: datetime
 
@@ -31,6 +32,7 @@ class UserUpdate(BaseModel):
     company_city: str | None = Field(None, max_length=100)
     company_country: str | None = Field(None, max_length=100)
     company_phone: str | None = Field(None, max_length=50)
+    preferred_currency: str | None = Field(None, max_length=3)
     current_password: str | None = None
     new_password: str | None = None
 

@@ -25,6 +25,7 @@ export interface UserResponse {
   company_city: string | null;
   company_country: string | null;
   company_phone: string | null;
+  preferred_currency: string;
   is_active: boolean;
   created_at: string;
 }
