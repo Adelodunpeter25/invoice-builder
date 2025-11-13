@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Georgia", "Garamond", "Palatino Linotype", "Palatino", "serif"],
+        sans: ["Grenze", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
