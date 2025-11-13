@@ -17,13 +17,24 @@ const Settings = () => {
 
   const [email, setEmail] = useState(user?.email || "");
   const [companyName, setCompanyName] = useState(user?.company_name || "");
+  const [companyAddress, setCompanyAddress] = useState(user?.company_address || "");
+  const [companyCity, setCompanyCity] = useState(user?.company_city || "");
+  const [companyCountry, setCompanyCountry] = useState(user?.company_country || "");
+  const [companyPhone, setCompanyPhone] = useState(user?.company_phone || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSaveProfile = async () => {
     try {
-      await updateUser.mutateAsync({ email, company_name: companyName });
+      await updateUser.mutateAsync({ 
+        email, 
+        company_name: companyName,
+        company_address: companyAddress,
+        company_city: companyCity,
+        company_country: companyCountry,
+        company_phone: companyPhone
+      });
       await refetchUser();
       toast.success("Profile updated successfully!");
     } catch (error: any) {
@@ -84,6 +95,24 @@ const Settings = () => {
                     <div className="space-y-2">
                       <Label htmlFor="company">Company Name</Label>
                       <Input id="company" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your Company Ltd." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Company Address</Label>
+                      <Input id="address" value={companyAddress} onChange={(e) => setCompanyAddress(e.target.value)} placeholder="123 Business St." />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="city">City</Label>
+                        <Input id="city" value={companyCity} onChange={(e) => setCompanyCity(e.target.value)} placeholder="City" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Input id="country" value={companyCountry} onChange={(e) => setCompanyCountry(e.target.value)} placeholder="Country" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Company Phone</Label>
+                      <Input id="phone" value={companyPhone} onChange={(e) => setCompanyPhone(e.target.value)} placeholder="+1234567890" />
                     </div>
                     <Button onClick={handleSaveProfile} disabled={updateUser.isPending}>
                       {updateUser.isPending ? "Saving..." : "Save Changes"}

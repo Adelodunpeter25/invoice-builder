@@ -21,6 +21,10 @@ export interface UserResponse {
   username: string;
   email: string;
   company_name: string | null;
+  company_address: string | null;
+  company_city: string | null;
+  company_country: string | null;
+  company_phone: string | null;
   is_active: boolean;
   created_at: string;
 }

@@ -12,6 +12,10 @@ class UserResponse(BaseModel):
     username: str
     email: EmailStr
     company_name: str | None
+    company_address: str | None
+    company_city: str | None
+    company_country: str | None
+    company_phone: str | None
     is_active: bool
     created_at: datetime
 
@@ -23,6 +27,10 @@ class UserUpdate(BaseModel):
 
     email: EmailStr | None = None
     company_name: str | None = Field(None, max_length=255)
+    company_address: str | None = Field(None, max_length=500)
+    company_city: str | None = Field(None, max_length=100)
+    company_country: str | None = Field(None, max_length=100)
+    company_phone: str | None = Field(None, max_length=50)
     current_password: str | None = None
     new_password: str | None = None
 

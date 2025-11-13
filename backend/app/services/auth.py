@@ -75,6 +75,18 @@ async def update_user(db: AsyncSession, user_id: int, data: UserUpdate) -> User:
 
     if data.company_name is not None:
         user.company_name = data.company_name
+    
+    if data.company_address is not None:
+        user.company_address = data.company_address
+    
+    if data.company_city is not None:
+        user.company_city = data.company_city
+    
+    if data.company_country is not None:
+        user.company_country = data.company_country
+    
+    if data.company_phone is not None:
+        user.company_phone = data.company_phone
 
     if data.new_password:
         if not data.current_password:
