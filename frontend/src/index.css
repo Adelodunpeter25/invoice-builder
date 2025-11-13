@@ -11,6 +11,10 @@ All colors MUST be HSL.
     font-family: 'Grenze', serif;
   }
   
+  html {
+    font-size: 18px;
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
