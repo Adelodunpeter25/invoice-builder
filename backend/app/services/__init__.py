@@ -10,6 +10,8 @@ from app.services.client import (
 )
 from app.services.email import send_invoice_email
 from app.services.invoice import (
+    check_duplicate_invoice,
+    clone_invoice,
     create_invoice,
     delete_invoice,
     get_invoice_by_id,
@@ -17,6 +19,7 @@ from app.services.invoice import (
     update_invoice,
     update_invoice_status,
 )
+from app.services.pdf import generate_invoice_pdf
 from app.services.template import (
     create_template,
     delete_template,
@@ -41,6 +44,8 @@ __all__ = [
     "update_invoice",
     "delete_invoice",
     "update_invoice_status",
+    "clone_invoice",
+    "check_duplicate_invoice",
     "create_template",
     "get_templates",
     "get_template_by_id",
@@ -48,5 +53,6 @@ __all__ = [
     "delete_template",
     "get_default_template",
     "send_invoice_email",
+    "generate_invoice_pdf",
 ]
 

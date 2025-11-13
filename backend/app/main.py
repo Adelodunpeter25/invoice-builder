@@ -9,6 +9,7 @@ from app.routes.auth import router as auth_router
 from app.routes.client import router as client_router
 from app.routes.health import router as health_router
 from app.routes.invoice import router as invoice_router
+from app.routes.invoice_operations import router as invoice_operations_router
 from app.routes.template import router as template_router
 
 setup_logging()
@@ -31,6 +32,7 @@ app.include_router(health_router)
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(client_router, prefix=settings.API_V1_STR)
 app.include_router(invoice_router, prefix=settings.API_V1_STR)
+app.include_router(invoice_operations_router, prefix=settings.API_V1_STR)
 app.include_router(template_router, prefix=settings.API_V1_STR)
 
 

@@ -168,3 +168,56 @@ async def update_invoice_status(
     await db.flush()
     await db.refresh(invoice)
     return invoice
+
+
+async def clone_invoice(db: AsyncSession, user_id: int, invoice_id: int) -> Invoice:
+    """Clone an existing invoice."""
+    original = await get_invoice_by_id(db, user_id, invoice_id)
+    
+    invoice_number = await generate_invoice_number(db, user_id)
+    
+    new_invoice = Invoice(
+        user_id=user_id,
+        client_id=original.client_id,
+        invoice_number=invoice_number,
+        issue_date=date.today(),
+        due_date=original.due_date,
+        currency=original.currency,
+        payment_terms=original.payment_terms,
+        notes=original.notes,
+        status=InvoiceStatus.DRAFT,
+        amount=original.amount,
+    )
+    db.add(new_invoice)
+    await db.flush()
+    
+    line_items = [
+        LineItem(
+            invoice_id=new_invoice.id,
+            description=item.description,
+            quantity=item.quantity,
+            unit_price=item.unit_price,
+            tax_rate=item.tax_rate,
+        )
+        for item in original.line_items
+    ]
+    db.add_all(line_items)
+    await db.flush()
+    await db.refresh(new_invoice, ["line_items"])
+    
+    return new_invoice
+
+
+async def check_duplicate_invoice(
+    db: AsyncSession, user_id: int, client_id: int, amount: Decimal, issue_date: date
+) -> Invoice | None:
+    """Check for potential duplicate invoice."""
+    result = await db.execute(
+        select(Invoice).where(
+            Invoice.user_id == user_id,
+            Invoice.client_id == client_id,
+            Invoice.amount == amount,
+            Invoice.issue_date == issue_date,
+        )
+    )
+    return result.scalar_one_or_none()
