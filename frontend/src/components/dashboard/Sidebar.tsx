@@ -73,11 +73,6 @@ export function Sidebar() {
 
         {/* User Info & Actions */}
         <div className="mt-auto border-t border-sidebar-border">
-          {user && !isCollapsed && (
-            <div className="p-4 border-b border-sidebar-border">
-              <p className="text-sm font-medium truncate">{user.username}</p>
-            </div>
-          )}
           <div className="p-4 space-y-2">
             <Button
               variant="ghost"
