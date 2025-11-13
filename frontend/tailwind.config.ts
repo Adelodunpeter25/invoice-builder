@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Grenze", "Georgia", "serif"],
+        sans: ["Grenze"],
       },
       colors: {
         border: "hsl(var(--border))",
