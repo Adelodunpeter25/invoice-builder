@@ -7,6 +7,11 @@ interface User {
   email: string;
   username: string;
   company_name: string | null;
+  company_address: string | null;
+  company_city: string | null;
+  company_country: string | null;
+  company_phone: string | null;
+  preferred_currency: string;
 }
 
 interface AuthContextType {
@@ -14,6 +19,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (username: string, email: string, password: string, companyName?: string) => Promise<void>;
   logout: () => void;
+  refetchUser: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -47,6 +53,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.email,
         username: userData.username,
         company_name: userData.company_name,
+        company_address: userData.company_address,
+        company_city: userData.company_city,
+        company_country: userData.company_country,
+        company_phone: userData.company_phone,
+        preferred_currency: userData.preferred_currency,
       });
     } catch (error) {
       console.error('Failed to fetch user:', error);
@@ -88,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, refetchUser: fetchCurrentUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
