@@ -17,9 +17,11 @@ import { fadeIn } from "@/lib/motion";
 import { toast } from "sonner";
 import { useInvoices, useDeleteInvoice, useCloneInvoice } from "@/hooks/useInvoices";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { getCurrencySymbol } from "@/lib/currency";
 
 const Invoices = () => {
+  const navigate = useNavigate();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -200,7 +202,7 @@ const Invoices = () => {
                 <h1 className="text-xl sm:text-2xl font-bold truncate">Invoices</h1>
                 <p className="text-sm text-muted-foreground truncate">Manage all your invoices</p>
               </div>
-              <Button onClick={() => setIsCreateModalOpen(true)} variant="hero" className="gap-2 w-full sm:w-auto shrink-0">
+              <Button onClick={() => navigate('/dashboard/invoices/new')} variant="hero" className="gap-2 w-full sm:w-auto shrink-0">
                 <Plus className="w-4 h-4" />
                 <span>Create Invoice</span>
               </Button>

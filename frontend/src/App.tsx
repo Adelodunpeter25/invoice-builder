@@ -9,6 +9,7 @@ import Landing from "./pages/Landing";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Clients from "./pages/dashboard/Clients";
 import Invoices from "./pages/dashboard/Invoices";
+import InvoiceBuilder from "./pages/dashboard/InvoiceBuilder";
 import Settings from "./pages/dashboard/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/dashboard/clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
             <Route path="/dashboard/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
+            <Route path="/dashboard/invoices/new" element={<ProtectedRoute><InvoiceBuilder /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

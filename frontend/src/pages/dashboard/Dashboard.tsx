@@ -128,7 +128,7 @@ const Dashboard = () => {
                   Welcome back, {user?.username}! Here's your invoice overview.
                 </p>
               </div>
-              <Button onClick={() => setIsCreateModalOpen(true)} variant="hero" className="gap-2 w-full sm:w-auto shrink-0">
+              <Button onClick={() => navigate('/dashboard/invoices/new')} variant="hero" className="gap-2 w-full sm:w-auto shrink-0">
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Create Invoice</span>
                 <span className="sm:hidden">New</span>
