@@ -148,7 +148,7 @@ const Dashboard = () => {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
             >
               <motion.div variants={fadeIn}>
-                <Card className="shadow-card border-border">
+                <Card className="shadow-card border-border h-full">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
                   </CardHeader>
@@ -160,7 +160,7 @@ const Dashboard = () => {
               </motion.div>
 
               <motion.div variants={fadeIn}>
-                <Card className="shadow-card border-border">
+                <Card className="shadow-card border-border h-full">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Paid Invoices</CardTitle>
                   </CardHeader>
@@ -172,7 +172,7 @@ const Dashboard = () => {
               </motion.div>
 
               <motion.div variants={fadeIn}>
-                <Card className="shadow-card border-border">
+                <Card className="shadow-card border-border h-full">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Pending Amount</CardTitle>
                   </CardHeader>
@@ -184,7 +184,7 @@ const Dashboard = () => {
               </motion.div>
 
               <motion.div variants={fadeIn}>
-                <Card className="shadow-card border-border">
+                <Card className="shadow-card border-border h-full">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Overdue</CardTitle>
                   </CardHeader>
