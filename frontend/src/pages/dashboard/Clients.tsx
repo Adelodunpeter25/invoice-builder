@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Mail, Phone, Edit, Trash } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { AddClientModal } from "@/components/dashboard/AddClientModal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/motion";
@@ -11,6 +12,7 @@ import { useClients, useDeleteClient } from "@/hooks/useClients";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Clients = () => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { data: clientsData, isLoading } = useClients(1, 100);
   const deleteClient = useDeleteClient();
 
@@ -55,7 +57,7 @@ const Clients = () => {
                 <h1 className="text-xl sm:text-2xl font-bold truncate">Clients</h1>
                 <p className="text-sm text-muted-foreground truncate">Manage your client relationships</p>
               </div>
-              <Button onClick={() => toast.info("Add client modal coming soon")} variant="hero" className="gap-2 w-full sm:w-auto shrink-0">
+              <Button onClick={() => setIsAddModalOpen(true)} variant="hero" className="gap-2 w-full sm:w-auto shrink-0">
                 <Plus className="w-4 h-4" />
                 <span>Add Client</span>
               </Button>
@@ -66,7 +68,7 @@ const Clients = () => {
             {clients.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground mb-4">No clients yet. Add your first client to get started!</p>
-                <Button onClick={() => toast.info("Add client modal coming soon")} variant="hero">
+                <Button onClick={() => setIsAddModalOpen(true)} variant="hero">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Client
                 </Button>
@@ -126,6 +128,8 @@ const Clients = () => {
           </main>
         </div>
       </div>
+
+      <AddClientModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
     </SidebarProvider>
   );
 };
