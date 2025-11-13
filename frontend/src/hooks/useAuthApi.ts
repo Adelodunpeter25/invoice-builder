@@ -4,33 +4,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as api from '@/lib/api';
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  company_name?: string;
-}
-
-interface TokenResponse {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-}
-
-interface UserResponse {
-  id: number;
-  username: string;
-  email: string;
-  company_name: string | null;
-  is_active: boolean;
-  created_at: string;
-}
+import type { LoginData, RegisterData, TokenResponse, UserResponse } from '@/types';
 
 export function useLogin() {
   return useMutation({

@@ -4,58 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '@/lib/api';
-
-interface LineItem {
-  id?: number;
-  description: string;
-  quantity: number;
-  unit_price: number;
-  tax_rate: number;
-}
-
-interface Invoice {
-  id: number;
-  user_id: number;
-  client_id: number;
-  invoice_number: string;
-  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
-  currency: 'USD' | 'EUR' | 'GBP' | 'NGN';
-  amount: number;
-  issue_date: string;
-  due_date: string;
-  payment_terms: string | null;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-  line_items?: LineItem[];
-}
-
-interface InvoiceCreate {
-  client_id: number;
-  issue_date: string;
-  due_date: string;
-  currency?: 'USD' | 'EUR' | 'GBP' | 'NGN';
-  payment_terms?: string;
-  notes?: string;
-  line_items: LineItem[];
-}
-
-interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  page_size: number;
-  total_pages: number;
-}
-
-interface InvoiceFilters {
-  page?: number;
-  page_size?: number;
-  status?: string;
-  client_id?: number;
-  start_date?: string;
-  end_date?: string;
-}
+import type { Invoice, InvoiceCreate, InvoiceFilters, PaginatedResponse } from '@/types';
 
 export function useInvoices(filters: InvoiceFilters = {}) {
   const token = api.getToken();

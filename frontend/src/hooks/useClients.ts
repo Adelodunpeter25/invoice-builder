@@ -4,34 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '@/lib/api';
-
-interface Client {
-  id: number;
-  user_id: number;
-  name: string;
-  email: string;
-  phone: string | null;
-  address: string | null;
-  tax_id: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface ClientCreate {
-  name: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  tax_id?: string;
-}
-
-interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  page_size: number;
-  total_pages: number;
-}
+import type { Client, ClientCreate, PaginatedResponse } from '@/types';
 
 export function useClients(page = 1, pageSize = 10) {
   const token = api.getToken();
