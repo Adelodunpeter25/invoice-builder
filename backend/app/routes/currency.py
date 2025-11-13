@@ -6,7 +6,7 @@ router = APIRouter(prefix="/currency", tags=["Currency"])
 
 
 @router.get("/rates")
-async def get_rates(base: str = Query("USD", description="Base currency code")):
+async def get_rates(base: str = Query("NGN", description="Base currency code")):
     """Get exchange rates for a base currency."""
     return await get_exchange_rates(base)
 

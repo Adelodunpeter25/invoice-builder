@@ -6,7 +6,7 @@ from app.core.config import settings
 EXCHANGE_RATE_API_URL = "https://api.exchangerate-api.com/v4/latest"
 
 
-async def get_exchange_rates(base_currency: str = "USD") -> dict:
+async def get_exchange_rates(base_currency: str = "NGN") -> dict:
     """Get exchange rates for a base currency."""
     async with httpx.AsyncClient() as client:
         response = await client.get(f"{EXCHANGE_RATE_API_URL}/{base_currency}")
