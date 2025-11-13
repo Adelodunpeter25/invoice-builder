@@ -4,22 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Mail, Phone, Edit, Trash } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { AddClientModal } from "@/components/dashboard/AddClientModal";
+import { EditClientModal } from "@/components/dashboard/EditClientModal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/motion";
 import { toast } from "sonner";
 import { useClients, useDeleteClient } from "@/hooks/useClients";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import type { Client } from "@/types";
 
 const Clients = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const { data: clientsData, isLoading } = useClients(1, 100);
   const deleteClient = useDeleteClient();
 
   const clients = clientsData?.items || [];
 
-  const handleEdit = (clientId: number) => {
-    toast.info("Edit client functionality coming soon");
+  const handleEdit = (client: Client) => {
+    setSelectedClient(client);
+    setIsEditModalOpen(true);
   };
 
   const handleDelete = async (clientId: number) => {
@@ -88,7 +93,7 @@ const Clients = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEdit(client.id)}>
+                              <DropdownMenuItem onClick={() => handleEdit(client)}>
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
@@ -130,6 +135,7 @@ const Clients = () => {
       </div>
 
       <AddClientModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
+      <EditClientModal open={isEditModalOpen} onOpenChange={setIsEditModalOpen} client={selectedClient} />
     </SidebarProvider>
   );
 };
