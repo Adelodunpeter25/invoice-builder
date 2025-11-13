@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     EMAILS_FROM_EMAIL: str = ""
     EMAILS_FROM_NAME: str = "Invoice Generator"
     
+    EXCHANGE_RATE_API_URL: str = "https://api.exchangerate-api.com/v4/latest"
+    
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 
