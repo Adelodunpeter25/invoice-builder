@@ -56,9 +56,46 @@ export default function InvoiceBuilder() {
     setLineItems(updated);
   };
 
-  const handleSave = () => {
-    toast.success("Invoice created successfully!");
-    navigate("/dashboard/invoices");
+  const handleSave = async () => {
+    if (!clientId || !issueDate || !dueDate) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          client_id: parseInt(clientId),
+          issue_date: issueDate,
+          due_date: dueDate,
+          currency: user?.preferred_currency || 'NGN',
+          notes: notes || undefined,
+          discount_amount: discountAmount,
+          tax_amount: taxAmount,
+          line_items: lineItems.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            tax_rate: 0
+          }))
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create invoice');
+      }
+
+      toast.success("Invoice created successfully!");
+      navigate("/dashboard/invoices");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create invoice");
+    }
   };
 
   return (
