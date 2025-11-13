@@ -72,10 +72,11 @@ def generate_invoice_pdf(invoice: Invoice, client: Client, user: User, template_
     c.setFont("Helvetica", 14)
     y -= 30
     for item in invoice.line_items:
+        total_price = item.quantity * item.unit_price
         c.drawString(50, y, item.description[:30])
         c.drawString(300, y, f"{currency_symbol}{item.unit_price:.2f}")
         c.drawString(400, y, str(item.quantity))
-        c.drawString(500, y, f"{currency_symbol}{item.total_price:.2f}")
+        c.drawString(500, y, f"{currency_symbol}{total_price:.2f}")
         y -= 25
     
     # Totals
