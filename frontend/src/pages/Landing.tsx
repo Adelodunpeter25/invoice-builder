@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FileText, Zap, Users, Check, ArrowRight, Menu, Moon, Sun, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -286,43 +287,46 @@ const Landing = () => {
             Everything you need to know about Invoice Generator
           </p>
         </motion.div>
-        <div className="max-w-3xl mx-auto space-y-4">
-          {[
-            {
-              question: "How do I create my first invoice?",
-              answer: "Simply sign up for a free account, add your client details, and use our intuitive invoice builder to create professional invoices in minutes."
-            },
-            {
-              question: "Can I customize invoice templates?",
-              answer: "Yes! You can customize templates with your brand colors, logo, and payment terms. Premium users get access to advanced customization options."
-            },
-            {
-              question: "How do I get paid?",
-              answer: "Add payment links to your invoices and clients can pay directly. We support multiple payment methods including bank transfers and online payments."
-            },
-            {
-              question: "Is my data secure?",
-              answer: "Absolutely. We use industry-standard encryption to protect your data. All information is stored securely and backed up regularly."
-            },
-            {
-              question: "Can I send invoices via email?",
-              answer: "Yes! You can send invoices directly to your clients via email with PDF attachments. Track when they're opened and viewed."
-            },
-            {
-              question: "What currencies are supported?",
-              answer: "We support multiple currencies including USD, EUR, GBP, and NGN. You can set your preferred currency in your account settings."
-            }
-          ].map((faq, index) => (
-            <motion.div key={index} variants={fadeIn}>
-              <Card className="shadow-card border-border">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                  <p className="text-muted-foreground">{faq.answer}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        <motion.div variants={fadeIn} className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>How do I create my first invoice?</AccordionTrigger>
+              <AccordionContent>
+                Simply sign up for a free account, add your client details, and use our intuitive invoice builder to create professional invoices in minutes.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Can I customize invoice templates?</AccordionTrigger>
+              <AccordionContent>
+                Yes! You can customize templates with your brand colors, logo, and payment terms. Premium users get access to advanced customization options.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>How do I get paid?</AccordionTrigger>
+              <AccordionContent>
+                Add payment links to your invoices and clients can pay directly. We support multiple payment methods including bank transfers and online payments.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>Is my data secure?</AccordionTrigger>
+              <AccordionContent>
+                Absolutely. We use industry-standard encryption to protect your data. All information is stored securely and backed up regularly.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5">
+              <AccordionTrigger>Can I send invoices via email?</AccordionTrigger>
+              <AccordionContent>
+                Yes! You can send invoices directly to your clients via email with PDF attachments. Track when they're opened and viewed.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-6">
+              <AccordionTrigger>What currencies are supported?</AccordionTrigger>
+              <AccordionContent>
+                We support multiple currencies including USD, EUR, GBP, and NGN. You can set your preferred currency in your account settings.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </motion.div>
       </motion.section>
 
       {/* Footer */}
