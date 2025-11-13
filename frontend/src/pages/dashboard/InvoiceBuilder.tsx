@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft, Plus, Trash } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useClients } from "@/hooks/useClients";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +22,7 @@ interface LineItem {
 
 export default function InvoiceBuilder() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { data: clientsData } = useClients(1, 100);
   const clients = clientsData?.items || [];
@@ -37,6 +38,13 @@ export default function InvoiceBuilder() {
   ]);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
+
+  useEffect(() => {
+    const template = searchParams.get('template');
+    if (template) {
+      setTemplateId(template);
+    }
+  }, [searchParams]);
 
   const selectedClient = clients.find(c => c.id === parseInt(clientId));
 
@@ -89,8 +97,10 @@ export default function InvoiceBuilder() {
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to create invoice');
+        throw new Error(data.detail || 'Failed to create invoice');
       }
 
       toast.success("Invoice created successfully!");

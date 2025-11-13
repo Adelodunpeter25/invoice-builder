@@ -1,4 +1,4 @@
-import { FileText, LayoutDashboard, Users, Settings, Moon, Sun, LogOut } from "lucide-react";
+import { FileText, LayoutDashboard, Users, Settings, Moon, Sun, LogOut, FileStack } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,6 +21,7 @@ const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Clients", url: "/dashboard/clients", icon: Users },
   { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
+  { title: "Templates", url: "/dashboard/templates", icon: FileStack },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
 
