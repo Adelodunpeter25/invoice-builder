@@ -19,8 +19,6 @@ export function EditClientModal({ open, onOpenChange, client }: EditClientModalP
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
 
   useEffect(() => {
     if (client) {
@@ -28,8 +26,6 @@ export function EditClientModal({ open, onOpenChange, client }: EditClientModalP
       setEmail(client.email);
       setPhone(client.phone || "");
       setAddress(client.address || "");
-      setCity(client.city || "");
-      setCountry(client.country || "");
     }
   }, [client]);
 
@@ -42,8 +38,6 @@ export function EditClientModal({ open, onOpenChange, client }: EditClientModalP
         email,
         phone: phone || undefined,
         address: address || undefined,
-        city: city || undefined,
-        country: country || undefined,
       });
       toast.success("Client updated successfully!");
       onOpenChange(false);
@@ -75,16 +69,6 @@ export function EditClientModal({ open, onOpenChange, client }: EditClientModalP
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
             <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} />
-            </div>
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

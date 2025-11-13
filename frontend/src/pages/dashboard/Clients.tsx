@@ -119,9 +119,6 @@ const Clients = () => {
                         {client.address && (
                           <div className="text-sm text-muted-foreground">
                             <p className="truncate">{client.address}</p>
-                            {client.city && client.country && (
-                              <p className="truncate">{client.city}, {client.country}</p>
-                            )}
                           </div>
                         )}
                       </CardContent>

@@ -61,6 +61,10 @@ async function request<T>(
     throw new Error(error.detail || 'An error occurred');
   }
 
+  if (response.status === 204) {
+    return {} as T;
+  }
+
   return response.json();
 }
 
