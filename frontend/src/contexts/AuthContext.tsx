@@ -1,17 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import * as api from '@/lib/api';
+import type { UserResponse } from '@/types';
 
 interface User {
-  id: string;
+  id: number;
   email: string;
-  name: string;
+  username: string;
+  company_name: string | null;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, name: string) => Promise<void>;
+  signup: (username: string, email: string, password: string, companyName?: string) => Promise<void>;
   logout: () => void;
-  resetPassword: (email: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -22,80 +24,71 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user on mount
-    const storedUser = localStorage.getItem('invoicely_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Check for token and fetch user on mount
+    const token = api.getToken();
+    if (token) {
+      fetchCurrentUser();
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Mock authentication - in real app, this would call an API
-    const storedUsers = JSON.parse(localStorage.getItem('invoicely_users') || '[]');
-    const existingUser = storedUsers.find((u: any) => u.email === email && u.password === password);
-    
-    if (!existingUser) {
-      throw new Error('Invalid email or password');
-    }
+  const fetchCurrentUser = async () => {
+    try {
+      const token = api.getToken();
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
 
-    const userData: User = {
-      id: existingUser.id,
-      email: existingUser.email,
-      name: existingUser.name
-    };
-    
-    setUser(userData);
-    localStorage.setItem('invoicely_user', JSON.stringify(userData));
+      const userData = await api.get<UserResponse>('/api/v1/auth/me', token);
+      setUser({
+        id: userData.id,
+        email: userData.email,
+        username: userData.username,
+        company_name: userData.company_name,
+      });
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+      api.removeToken();
+      api.removeRefreshToken();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const signup = async (email: string, password: string, name: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Check if user already exists
-    const storedUsers = JSON.parse(localStorage.getItem('invoicely_users') || '[]');
-    if (storedUsers.find((u: any) => u.email === email)) {
-      throw new Error('User already exists');
-    }
+  const login = async (email: string, password: string) => {
+    const response = await api.post<{ access_token: string; refresh_token: string }>(
+      '/api/v1/auth/login',
+      { email, password }
+    );
 
-    const newUser = {
-      id: Date.now().toString(),
+    api.setToken(response.access_token);
+    api.setRefreshToken(response.refresh_token);
+
+    await fetchCurrentUser();
+  };
+
+  const signup = async (username: string, email: string, password: string, companyName?: string) => {
+    await api.post<UserResponse>('/api/v1/auth/register', {
+      username,
       email,
       password,
-      name
-    };
-    
-    storedUsers.push(newUser);
-    localStorage.setItem('invoicely_users', JSON.stringify(storedUsers));
+      company_name: companyName,
+    });
 
-    const userData: User = {
-      id: newUser.id,
-      email: newUser.email,
-      name: newUser.name
-    };
-    
-    setUser(userData);
-    localStorage.setItem('invoicely_user', JSON.stringify(userData));
+    // After signup, login automatically
+    await login(email, password);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('invoicely_user');
-  };
-
-  const resetPassword = async (email: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // In a real app, this would send a password reset email
-    console.log('Password reset email sent to:', email);
+    api.removeToken();
+    api.removeRefreshToken();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, resetPassword, isLoading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
