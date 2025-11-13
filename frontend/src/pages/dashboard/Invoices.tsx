@@ -31,7 +31,7 @@ const Invoices = () => {
   const { user } = useAuth();
   const { data: allInvoices, isLoading } = useInvoices({});
   const { data: draftInvoices } = useInvoices({ status: "draft" });
-  const { data: pendingInvoices } = useInvoices({ status: "pending" });
+  const { data: sentInvoices } = useInvoices({ status: "sent" });
   const { data: paidInvoices } = useInvoices({ status: "paid" });
   const { data: overdueInvoices } = useInvoices({ status: "overdue" });
   const deleteInvoice = useDeleteInvoice();
@@ -43,10 +43,9 @@ const Invoices = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "paid": return "bg-green-500/10 text-green-700 dark:text-green-400 hover:bg-green-500/20";
-      case "pending": return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20";
+      case "sent": return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20";
       case "overdue": return "bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-500/20";
       case "draft": return "bg-gray-500/10 text-gray-700 dark:text-gray-400 hover:bg-gray-500/20";
-      case "sent": return "bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20";
       case "cancelled": return "bg-gray-500/10 text-gray-700 dark:text-gray-400 hover:bg-gray-500/20";
       default: return "bg-gray-500/10 text-gray-700 dark:text-gray-400 hover:bg-gray-500/20";
     }
@@ -219,7 +218,7 @@ const Invoices = () => {
                     <TabsList className="mb-4">
                       <TabsTrigger value="all">All ({invoices.length})</TabsTrigger>
                       <TabsTrigger value="draft">Draft ({draftInvoices?.items.length || 0})</TabsTrigger>
-                      <TabsTrigger value="pending">Pending ({pendingInvoices?.items.length || 0})</TabsTrigger>
+                      <TabsTrigger value="sent">Sent ({sentInvoices?.items.length || 0})</TabsTrigger>
                       <TabsTrigger value="paid">Paid ({paidInvoices?.items.length || 0})</TabsTrigger>
                       <TabsTrigger value="overdue">Overdue ({overdueInvoices?.items.length || 0})</TabsTrigger>
                     </TabsList>
@@ -230,8 +229,8 @@ const Invoices = () => {
                     <TabsContent value="draft">
                       <InvoiceTable invoices={draftInvoices?.items || []} />
                     </TabsContent>
-                    <TabsContent value="pending">
-                      <InvoiceTable invoices={pendingInvoices?.items || []} />
+                    <TabsContent value="sent">
+                      <InvoiceTable invoices={sentInvoices?.items || []} />
                     </TabsContent>
                     <TabsContent value="paid">
                       <InvoiceTable invoices={paidInvoices?.items || []} />
