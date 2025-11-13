@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Download, Send, MoreVertical, Eye, Edit, Trash, Copy } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CreateInvoiceModal } from "@/components/dashboard/CreateInvoiceModal";
+import { ViewInvoiceDialog } from "@/components/dashboard/ViewInvoiceDialog";
+import { EditInvoiceModal } from "@/components/dashboard/EditInvoiceModal";
+import { DeleteInvoiceDialog } from "@/components/dashboard/DeleteInvoiceDialog";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
@@ -23,6 +26,10 @@ interface Invoice {
 
 const Invoices = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [invoices] = useState<Invoice[]>([
     { id: "INV-001", clientName: "Acme Corporation", amount: 2500, status: "paid", date: "2025-01-10", dueDate: "2025-02-10" },
     { id: "INV-002", clientName: "Tech Startup Inc", amount: 1750, status: "pending", date: "2025-01-15", dueDate: "2025-02-15" },
@@ -53,11 +60,13 @@ const Invoices = () => {
   };
 
   const handleView = (invoice: Invoice) => {
-    toast.info(`Viewing ${invoice.id}`);
+    setSelectedInvoice(invoice);
+    setIsViewDialogOpen(true);
   };
 
   const handleEdit = (invoice: Invoice) => {
-    toast.info(`Editing ${invoice.id}`);
+    setSelectedInvoice(invoice);
+    setIsEditModalOpen(true);
   };
 
   const handleClone = (invoice: Invoice) => {
@@ -65,7 +74,8 @@ const Invoices = () => {
   };
 
   const handleDelete = (invoice: Invoice) => {
-    toast.success(`Deleted ${invoice.id}`);
+    setSelectedInvoice(invoice);
+    setIsDeleteDialogOpen(true);
   };
 
   const InvoiceTable = ({ invoices }: { invoices: Invoice[] }) => (
@@ -195,6 +205,9 @@ const Invoices = () => {
       </div>
 
       <CreateInvoiceModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
+      <ViewInvoiceDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} invoice={selectedInvoice} />
+      <EditInvoiceModal open={isEditModalOpen} onOpenChange={setIsEditModalOpen} invoice={selectedInvoice} />
+      <DeleteInvoiceDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} invoiceId={selectedInvoice?.id || ""} />
     </SidebarProvider>
   );
 };
