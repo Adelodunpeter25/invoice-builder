@@ -15,15 +15,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { motion } from "framer-motion";
 import { fadeIn } from "@/lib/motion";
 import { toast } from "sonner";
-
-interface Invoice {
-  id: string;
-  clientName: string;
-  amount: number;
-  status: "paid" | "pending" | "overdue" | "draft";
-  date: string;
-  dueDate: string;
-}
+import { useInvoices, useDeleteInvoice, useCloneInvoice } from "@/hooks/useInvoices";
+import { useAuth } from "@/contexts/AuthContext";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const Invoices = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -31,136 +25,166 @@ const Invoices = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [invoices, setInvoices] = useState<Invoice[]>([
-    { id: "INV-001", clientName: "Acme Corporation", amount: 2500, status: "paid", date: "2025-01-10", dueDate: "2025-02-10" },
-    { id: "INV-002", clientName: "Tech Startup Inc", amount: 1750, status: "pending", date: "2025-01-15", dueDate: "2025-02-15" },
-    { id: "INV-003", clientName: "Design Studio", amount: 3200, status: "overdue", date: "2024-12-20", dueDate: "2025-01-20" },
-    { id: "INV-004", clientName: "Marketing Agency", amount: 4500, status: "paid", date: "2025-01-05", dueDate: "2025-02-05" },
-    { id: "INV-005", clientName: "Consulting Firm", amount: 1200, status: "draft", date: "2025-01-20", dueDate: "2025-02-20" },
-  ]);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("all");
+  
+  const { user } = useAuth();
+  const { data: allInvoices, isLoading } = useInvoices({});
+  const { data: draftInvoices } = useInvoices({ status: "draft" });
+  const { data: pendingInvoices } = useInvoices({ status: "pending" });
+  const { data: paidInvoices } = useInvoices({ status: "paid" });
+  const { data: overdueInvoices } = useInvoices({ status: "overdue" });
+  const deleteInvoice = useDeleteInvoice();
+  const cloneInvoice = useCloneInvoice();
 
-  const getStatusColor = (status: Invoice["status"]) => {
+  const currencySymbol = getCurrencySymbol(user?.preferred_currency || 'NGN');
+  const invoices = allInvoices?.items || [];
+
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "paid": return "bg-green-500/10 text-green-700 dark:text-green-400 hover:bg-green-500/20";
       case "pending": return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20";
       case "overdue": return "bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-500/20";
       case "draft": return "bg-gray-500/10 text-gray-700 dark:text-gray-400 hover:bg-gray-500/20";
+      case "sent": return "bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20";
+      case "cancelled": return "bg-gray-500/10 text-gray-700 dark:text-gray-400 hover:bg-gray-500/20";
+      default: return "bg-gray-500/10 text-gray-700 dark:text-gray-400 hover:bg-gray-500/20";
     }
   };
 
-  const filterInvoices = (status?: Invoice["status"]) => {
-    return status ? invoices.filter(inv => inv.status === status) : invoices;
+  const handleDownload = async (invoice: any) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoice.id}/pdf`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${invoice.invoice_number}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success(`Downloaded ${invoice.invoice_number}`);
+    } catch (error) {
+      toast.error("Failed to download invoice");
+    }
   };
 
-  const handleDownload = (invoice: Invoice) => {
-    const blob = new Blob([`Invoice ${invoice.id}\nClient: ${invoice.clientName}\nAmount: ₦${invoice.amount}`], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${invoice.id}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    toast.success(`Downloaded ${invoice.id}`);
-  };
-
-  const handleSend = (invoice: Invoice) => {
+  const handleSend = (invoice: any) => {
     setSelectedInvoice(invoice);
     setIsSendModalOpen(true);
   };
 
-  const handleView = (invoice: Invoice) => {
+  const handleView = (invoice: any) => {
     setSelectedInvoice(invoice);
     setIsViewDialogOpen(true);
   };
 
-  const handleEdit = (invoice: Invoice) => {
+  const handleEdit = (invoice: any) => {
     setSelectedInvoice(invoice);
     setIsEditModalOpen(true);
   };
 
-  const handleClone = (invoice: Invoice) => {
-    const clonedInvoice: Invoice = {
-      ...invoice,
-      id: `INV-${String(invoices.length + 1).padStart(3, "0")}`,
-      status: "draft",
-      date: new Date().toISOString().split("T")[0],
-    };
-    setInvoices([...invoices, clonedInvoice]);
-    toast.success(`Cloned ${invoice.id} as ${clonedInvoice.id}`);
+  const handleClone = async (invoice: any) => {
+    try {
+      await cloneInvoice.mutateAsync(invoice.id);
+      toast.success(`Cloned ${invoice.invoice_number}`);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to clone invoice");
+    }
   };
 
-  const handleDelete = (invoice: Invoice) => {
+  const handleDelete = (invoice: any) => {
     setSelectedInvoice(invoice);
     setIsDeleteDialogOpen(true);
   };
 
-  const InvoiceTable = ({ invoices }: { invoices: Invoice[] }) => (
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const InvoiceTable = ({ invoices }: { invoices: any[] }) => (
     <div className="overflow-x-auto -mx-2 sm:mx-0">
-      <table className="min-w-full divide-y divide-border">
-        <thead>
-          <tr className="text-left text-xs sm:text-sm">
-            <th className="pb-3 font-medium text-muted-foreground px-2 sm:px-0">Invoice</th>
-            <th className="pb-3 font-medium text-muted-foreground px-2">Client</th>
-            <th className="pb-3 font-medium text-muted-foreground px-2">Amount</th>
-            <th className="pb-3 font-medium text-muted-foreground px-2">Status</th>
-            <th className="pb-3 font-medium text-muted-foreground px-2 hidden sm:table-cell">Due Date</th>
-            <th className="pb-3 font-medium text-muted-foreground px-2"></th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {invoices.map((invoice) => (
-            <tr key={invoice.id} className="text-xs sm:text-sm">
-              <td className="py-4 px-2 sm:px-0 font-medium">{invoice.id}</td>
-              <td className="py-4 px-2">{invoice.clientName}</td>
-              <td className="py-4 px-2 font-semibold">₦{invoice.amount.toLocaleString()}</td>
-              <td className="py-4 px-2">
-                <Badge className={getStatusColor(invoice.status)} variant="secondary">
-                  {invoice.status}
-                </Badge>
-              </td>
-              <td className="py-4 px-2 text-muted-foreground hidden sm:table-cell">{invoice.dueDate}</td>
-              <td className="py-4 px-2">
-                <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleDownload(invoice)}>
-                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleSend(invoice)}>
-                    <Send className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
-                        <MoreVertical className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleView(invoice)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleEdit(invoice)}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleClone(invoice)}>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Clone
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(invoice)} className="text-destructive">
-                        <Trash className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </td>
+      {invoices.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          <p>No invoices found.</p>
+        </div>
+      ) : (
+        <table className="min-w-full divide-y divide-border">
+          <thead>
+            <tr className="text-left text-xs sm:text-sm">
+              <th className="pb-3 font-medium text-muted-foreground px-2 sm:px-0">Invoice</th>
+              <th className="pb-3 font-medium text-muted-foreground px-2">Client</th>
+              <th className="pb-3 font-medium text-muted-foreground px-2">Amount</th>
+              <th className="pb-3 font-medium text-muted-foreground px-2">Status</th>
+              <th className="pb-3 font-medium text-muted-foreground px-2 hidden sm:table-cell">Due Date</th>
+              <th className="pb-3 font-medium text-muted-foreground px-2"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {invoices.map((invoice: any) => (
+              <tr key={invoice.id} className="text-xs sm:text-sm">
+                <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
+                <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
+                <td className="py-4 px-2 font-semibold">{currencySymbol}{invoice.total_amount.toLocaleString()}</td>
+                <td className="py-4 px-2">
+                  <Badge className={getStatusColor(invoice.status)} variant="secondary">
+                    {invoice.status}
+                  </Badge>
+                </td>
+                <td className="py-4 px-2 text-muted-foreground hidden sm:table-cell">
+                  {new Date(invoice.due_date).toLocaleDateString()}
+                </td>
+                <td className="py-4 px-2">
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleDownload(invoice)}>
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleSend(invoice)}>
+                      <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
+                          <MoreVertical className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleView(invoice)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(invoice)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleClone(invoice)}>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Clone
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(invoice)} className="text-destructive">
+                          <Trash className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 
@@ -191,29 +215,29 @@ const Invoices = () => {
                   <CardTitle className="text-lg sm:text-xl">All Invoices</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Tabs defaultValue="all" className="w-full">
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="mb-4">
                       <TabsTrigger value="all">All ({invoices.length})</TabsTrigger>
-                      <TabsTrigger value="draft">Draft ({filterInvoices("draft").length})</TabsTrigger>
-                      <TabsTrigger value="pending">Pending ({filterInvoices("pending").length})</TabsTrigger>
-                      <TabsTrigger value="paid">Paid ({filterInvoices("paid").length})</TabsTrigger>
-                      <TabsTrigger value="overdue">Overdue ({filterInvoices("overdue").length})</TabsTrigger>
+                      <TabsTrigger value="draft">Draft ({draftInvoices?.items.length || 0})</TabsTrigger>
+                      <TabsTrigger value="pending">Pending ({pendingInvoices?.items.length || 0})</TabsTrigger>
+                      <TabsTrigger value="paid">Paid ({paidInvoices?.items.length || 0})</TabsTrigger>
+                      <TabsTrigger value="overdue">Overdue ({overdueInvoices?.items.length || 0})</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="all">
                       <InvoiceTable invoices={invoices} />
                     </TabsContent>
                     <TabsContent value="draft">
-                      <InvoiceTable invoices={filterInvoices("draft")} />
+                      <InvoiceTable invoices={draftInvoices?.items || []} />
                     </TabsContent>
                     <TabsContent value="pending">
-                      <InvoiceTable invoices={filterInvoices("pending")} />
+                      <InvoiceTable invoices={pendingInvoices?.items || []} />
                     </TabsContent>
                     <TabsContent value="paid">
-                      <InvoiceTable invoices={filterInvoices("paid")} />
+                      <InvoiceTable invoices={paidInvoices?.items || []} />
                     </TabsContent>
                     <TabsContent value="overdue">
-                      <InvoiceTable invoices={filterInvoices("overdue")} />
+                      <InvoiceTable invoices={overdueInvoices?.items || []} />
                     </TabsContent>
                   </Tabs>
                 </CardContent>
@@ -226,8 +250,18 @@ const Invoices = () => {
       <CreateInvoiceModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
       <ViewInvoiceDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} invoice={selectedInvoice} />
       <EditInvoiceModal open={isEditModalOpen} onOpenChange={setIsEditModalOpen} invoice={selectedInvoice} />
-      <DeleteInvoiceDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} invoiceId={selectedInvoice?.id || ""} />
-      <SendInvoiceModal open={isSendModalOpen} onOpenChange={setIsSendModalOpen} invoiceId={selectedInvoice?.id || ""} />
+      <DeleteInvoiceDialog 
+        open={isDeleteDialogOpen} 
+        onOpenChange={setIsDeleteDialogOpen} 
+        invoiceId={selectedInvoice?.id || null}
+        invoiceNumber={selectedInvoice?.invoice_number || ""}
+      />
+      <SendInvoiceModal 
+        open={isSendModalOpen} 
+        onOpenChange={setIsSendModalOpen} 
+        invoiceId={selectedInvoice?.id || 0}
+        clientEmail={selectedInvoice?.client?.email}
+      />
     </SidebarProvider>
   );
 };

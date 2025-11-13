@@ -9,26 +9,37 @@ import { toast } from "sonner";
 interface SendInvoiceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  invoiceId: string;
+  invoiceId: number;
   clientEmail?: string;
 }
 
 export function SendInvoiceModal({ open, onOpenChange, invoiceId, clientEmail }: SendInvoiceModalProps) {
   const [email, setEmail] = useState(clientEmail || "");
-  const [subject, setSubject] = useState(`Invoice ${invoiceId}`);
-  const [message, setMessage] = useState(`Please find attached invoice ${invoiceId}.`);
+  const [subject, setSubject] = useState(`Invoice #${invoiceId}`);
+  const [message, setMessage] = useState(`Please find attached invoice #${invoiceId}.`);
   const [isSending, setIsSending] = useState(false);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSending(true);
     
-    // Simulate sending
-    setTimeout(() => {
-      toast.success(`Invoice ${invoiceId} sent to ${email}`);
-      setIsSending(false);
+    try {
+      const token = localStorage.getItem('access_token');
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoiceId}/send`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, subject, message })
+      });
+      toast.success(`Invoice sent to ${email}`);
       onOpenChange(false);
-    }, 1000);
+    } catch (error) {
+      toast.error("Failed to send invoice");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -36,7 +47,7 @@ export function SendInvoiceModal({ open, onOpenChange, invoiceId, clientEmail }:
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Send Invoice</DialogTitle>
-          <DialogDescription>Send invoice {invoiceId} via email</DialogDescription>
+          <DialogDescription>Send invoice via email</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSend} className="space-y-4">
           <div className="space-y-2">
