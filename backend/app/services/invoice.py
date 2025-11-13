@@ -1,6 +1,6 @@
 """Invoice service."""
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import func, select
