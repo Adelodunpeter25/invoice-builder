@@ -9,6 +9,7 @@ import { CreateInvoiceModal } from "@/components/dashboard/CreateInvoiceModal";
 import { ViewInvoiceDialog } from "@/components/dashboard/ViewInvoiceDialog";
 import { EditInvoiceModal } from "@/components/dashboard/EditInvoiceModal";
 import { DeleteInvoiceDialog } from "@/components/dashboard/DeleteInvoiceDialog";
+import { SendInvoiceModal } from "@/components/dashboard/SendInvoiceModal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
@@ -29,8 +30,9 @@ const Invoices = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [invoices] = useState<Invoice[]>([
+  const [invoices, setInvoices] = useState<Invoice[]>([
     { id: "INV-001", clientName: "Acme Corporation", amount: 2500, status: "paid", date: "2025-01-10", dueDate: "2025-02-10" },
     { id: "INV-002", clientName: "Tech Startup Inc", amount: 1750, status: "pending", date: "2025-01-15", dueDate: "2025-02-15" },
     { id: "INV-003", clientName: "Design Studio", amount: 3200, status: "overdue", date: "2024-12-20", dueDate: "2025-01-20" },
@@ -52,11 +54,21 @@ const Invoices = () => {
   };
 
   const handleDownload = (invoice: Invoice) => {
-    toast.success(`Downloading ${invoice.id}`);
+    const blob = new Blob([`Invoice ${invoice.id}\nClient: ${invoice.clientName}\nAmount: ₦${invoice.amount}`], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${invoice.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    toast.success(`Downloaded ${invoice.id}`);
   };
 
   const handleSend = (invoice: Invoice) => {
-    toast.success(`Sending ${invoice.id} to ${invoice.clientName}`);
+    setSelectedInvoice(invoice);
+    setIsSendModalOpen(true);
   };
 
   const handleView = (invoice: Invoice) => {
@@ -70,7 +82,14 @@ const Invoices = () => {
   };
 
   const handleClone = (invoice: Invoice) => {
-    toast.success(`Cloned ${invoice.id}`);
+    const clonedInvoice: Invoice = {
+      ...invoice,
+      id: `INV-${String(invoices.length + 1).padStart(3, "0")}`,
+      status: "draft",
+      date: new Date().toISOString().split("T")[0],
+    };
+    setInvoices([...invoices, clonedInvoice]);
+    toast.success(`Cloned ${invoice.id} as ${clonedInvoice.id}`);
   };
 
   const handleDelete = (invoice: Invoice) => {
@@ -208,6 +227,7 @@ const Invoices = () => {
       <ViewInvoiceDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} invoice={selectedInvoice} />
       <EditInvoiceModal open={isEditModalOpen} onOpenChange={setIsEditModalOpen} invoice={selectedInvoice} />
       <DeleteInvoiceDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} invoiceId={selectedInvoice?.id || ""} />
+      <SendInvoiceModal open={isSendModalOpen} onOpenChange={setIsSendModalOpen} invoiceId={selectedInvoice?.id || ""} />
     </SidebarProvider>
   );
 };
