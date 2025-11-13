@@ -1,5 +1,7 @@
 """Invoice routes."""
 
+from datetime import date
+
 from fastapi import APIRouter, Query
 
 from app.core.constants import InvoiceStatus
@@ -38,10 +40,12 @@ async def get_invoices_endpoint(
     page_size: int = Query(10, ge=1, le=100),
     status: InvoiceStatus | None = None,
     client_id: int | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
 ):
     """Get paginated list of invoices with optional filters."""
     pagination = PaginationParams(page=page, page_size=page_size)
-    invoices, total = await get_invoices(db, user_id, pagination, status, client_id)
+    invoices, total = await get_invoices(db, user_id, pagination, status, client_id, start_date, end_date)
     return PaginatedResponse.create(invoices, total, page, page_size)
 
 

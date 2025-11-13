@@ -10,6 +10,7 @@ from app.schemas.invoice import (
     LineItemCreate,
     LineItemResponse,
 )
+from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate
 from app.schemas.user import UserResponse
 
 __all__ = [
@@ -27,5 +28,8 @@ __all__ = [
     "InvoiceListResponse",
     "LineItemCreate",
     "LineItemResponse",
+    "TemplateCreate",
+    "TemplateUpdate",
+    "TemplateResponse",
 ]
 

@@ -73,6 +73,8 @@ async def get_invoices(
     pagination: PaginationParams,
     status: InvoiceStatus | None = None,
     client_id: int | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
 ) -> tuple[list[Invoice], int]:
     """Get paginated list of invoices for a user."""
     query = select(Invoice).where(Invoice.user_id == user_id)
@@ -85,6 +87,14 @@ async def get_invoices(
     if client_id:
         query = query.where(Invoice.client_id == client_id)
         count_query = count_query.where(Invoice.client_id == client_id)
+    
+    if start_date:
+        query = query.where(Invoice.issue_date >= start_date)
+        count_query = count_query.where(Invoice.issue_date >= start_date)
+    
+    if end_date:
+        query = query.where(Invoice.issue_date <= end_date)
+        count_query = count_query.where(Invoice.issue_date <= end_date)
     
     total = await db.scalar(count_query)
     

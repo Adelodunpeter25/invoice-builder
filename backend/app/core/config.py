@@ -19,11 +19,9 @@ class Settings(BaseSettings):
     
     CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]
     
-    SMTP_HOST: str = ""
-    SMTP_PORT: int = 587
-    SMTP_USER: str = ""
-    SMTP_PASSWORD: str = ""
+    RESEND_API_KEY: str = ""
     EMAILS_FROM_EMAIL: str = ""
+    EMAILS_FROM_NAME: str = "Invoice Generator"
     
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
