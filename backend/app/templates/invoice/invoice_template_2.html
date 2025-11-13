@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }
+        .container { background-color: white; max-width: 900px; margin: 0 auto; padding: 50px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
+        .header-right { text-align: right; }
+        .invoice-title { font-size: 36px; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .company-info { font-size: 12px; color: #666; line-height: 1.6; }
+        .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 40px; }
+        .info-block { font-size: 13px; color: #333; line-height: 1.8; }
+        .info-block-left { font-size: 13px; color: #333; line-height: 1.8; }
+        .info-block-right { text-align: right; }
+        .info-label { font-weight: bold; color: #333; margin-bottom: 3px; }
+        .info-value { color: #666; margin-bottom: 10px; }
+        .items-table { width: 100%; margin-bottom: 40px; border-collapse: collapse; }
+        .table-header { background-color: #333; color: white; }
+        .table-header th { padding: 12px 15px; text-align: left; font-size: 13px; font-weight: bold; }
+        .items-table td { padding: 15px; font-size: 13px; border-bottom: 1px solid #eee; }
+        .items-table tr:last-child td { border-bottom: none; }
+        .item-desc { color: #333; }
+        .item-qty { text-align: center; color: #333; }
+        .item-price { text-align: right; color: #333; }
+        .item-total { text-align: right; color: #333; font-weight: 500; }
+        .totals-section { display: flex; justify-content: flex-end; margin-bottom: 50px; }
+        .totals-block { width: 250px; }
+        .total-row { display: grid; grid-template-columns: 1fr auto; gap: 30px; font-size: 13px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #eee; color: #333; }
+        .total-row.grand-total { border-bottom: 2px solid #333; font-weight: bold; font-size: 14px; margin-top: 8px; padding-top: 8px; }
+        .total-row.grand-total-label { font-weight: bold; }
+        .notes-section { margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; }
+        .notes-title { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .notes-text { font-size: 13px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div></div>
+            <div class="header-right">
+                <div class="invoice-title">INVOICE</div>
+                <div class="company-info">
+                    {{ user.company_name or user.username }}<br>
+                    {{ user.email or '' }}<br>
+                    {{ user.company_phone or '' }}<br>
+                    {{ user.company_address or '' }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-block-left">
+                <div class="info-label">Addressed to:</div>
+                <div class="info-value">{{ client.name }}<br>{{ client.email or '' }}<br>{{ client.address or '' }}</div>
+            </div>
+            <div class="info-block-right">
+                <div class="info-label">Number:</div>
+                <div class="info-value">{{ invoice.invoice_number }}</div>
+                <div class="info-label">Issue Date:</div>
+                <div class="info-value">{{ invoice.issue_date.strftime('%b %d %Y') }}</div>
+                <div class="info-label">Due Date:</div>
+                <div class="info-value">{{ invoice.due_date.strftime('%b %d %Y') }}</div>
+                <div class="info-label">Valid for:</div>
+                <div class="info-value">{{ (invoice.due_date - invoice.issue_date).days }} days</div>
+            </div>
+        </div>
+        
+        <table class="items-table">
+            <thead class="table-header">
+                <tr>
+                    <th>Items</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in line_items %}
+                <tr>
+                    <td class="item-desc">{{ item.description }}</td>
+                    <td class="item-qty">{{ item.quantity }}</td>
+                    <td class="item-price">{{ currency_symbol }}{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td class="item-total">{{ currency_symbol }}{{ "%.2f"|format(item.total_price) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="totals-section">
+            <div class="totals-block">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.subtotal) }}</span>
+                </div>
+                <div class="total-row">
+                    <span>Discount:</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.discount_amount) }}</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax:</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.tax_amount) }}</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span class="total-row-label">Total:</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.total_amount) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes-section">
+            <div class="notes-title">Notes</div>
+            <div class="notes-text">{{ invoice.notes or '' }}</div>
+        </div>
+    </div>
+</body>
+</html>

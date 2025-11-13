@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }
+        .container { background-color: white; max-width: 800px; margin: 0 auto; padding: 40px; }
+        .header { margin-bottom: 40px; }
+        .invoice-title { font-size: 32px; font-weight: bold; color: #333; margin-bottom: 8px; letter-spacing: 2px; }
+        .invoice-meta { font-size: 11px; color: #999; margin-bottom: 30px; }
+        .info-section { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .info-block h3 { font-size: 12px; color: #999; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .info-block p { font-size: 14px; color: #333; line-height: 1.6; }
+        .description { font-size: 12px; color: #999; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .items-table { width: 100%; margin-bottom: 30px; border-collapse: collapse; }
+        .table-header { background-color: #333; color: white; }
+        .table-header th { padding: 12px; text-align: left; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .items-table td { padding: 15px 12px; font-size: 14px; border-bottom: 1px solid #eee; }
+        .items-table tr:last-child td { border-bottom: none; }
+        .description-cell { color: #333; }
+        .price-cell { text-align: right; color: #333; }
+        .qty-cell { text-align: center; color: #333; }
+        .totals { display: flex; justify-content: flex-end; margin-bottom: 30px; }
+        .totals-block { width: 200px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .total-row.grand-total { border-bottom: 2px solid #333; font-weight: bold; font-size: 16px; margin-top: 15px; }
+        .notes { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+        .notes h3 { font-size: 12px; color: #999; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .notes p { font-size: 12px; color: #666; }
+        .footer { background-color: #333; color: white; padding: 15px; margin-top: 40px; text-align: center; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="invoice-title">INVOICE</div>
+            <div class="invoice-meta">Invoice No. {{ invoice.invoice_number }} | Due: {{ invoice.due_date.strftime('%b %d, %Y') }}</div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-block">
+                <h3>Bill To</h3>
+                <p>{{ client.name }}<br>
+                {% if client.email %}{{ client.email }}<br>{% endif %}
+                {% if client.phone %}{{ client.phone }}<br>{% endif %}
+                {% if client.address %}{{ client.address }}{% endif %}</p>
+            </div>
+            <div class="info-block">
+                <h3>From</h3>
+                <p>{{ user.company_name or user.username }}<br>
+                {% if user.email %}{{ user.email }}<br>{% endif %}
+                {% if user.company_phone %}{{ user.company_phone }}<br>{% endif %}
+                {% if user.company_address %}{{ user.company_address }}{% endif %}</p>
+            </div>
+        </div>
+        
+        <div class="description">Line Items</div>
+        
+        <table class="items-table">
+            <thead class="table-header">
+                <tr>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>QTY</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in line_items %}
+                <tr>
+                    <td class="description-cell">{{ item.description }}</td>
+                    <td class="price-cell">{{ currency_symbol }}{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td class="qty-cell">{{ item.quantity }}</td>
+                    <td class="price-cell">{{ currency_symbol }}{{ "%.2f"|format(item.total_price) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="totals">
+            <div class="totals-block">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.subtotal) }}</span>
+                </div>
+                {% if invoice.discount_amount > 0 %}
+                <div class="total-row">
+                    <span>Discount</span>
+                    <span>-{{ currency_symbol }}{{ "%.2f"|format(invoice.discount_amount) }}</span>
+                </div>
+                {% endif %}
+                {% if invoice.tax_amount > 0 %}
+                <div class="total-row">
+                    <span>Tax</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.tax_amount) }}</span>
+                </div>
+                {% endif %}
+                <div class="total-row grand-total">
+                    <span>Total</span>
+                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.total_amount) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        {% if invoice.notes %}
+        <div class="notes">
+            <h3>Notes</h3>
+            <p>{{ invoice.notes }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="footer">
+            <p>{% if user.company_phone %}{{ user.company_phone }}{% endif %}{% if user.company_phone and user.email %} | {% endif %}{% if user.email %}{{ user.email }}{% endif %}</p>
+        </div>
+    </div>
+</body>
+</html>

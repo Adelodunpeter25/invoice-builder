@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }
+        .container { background-color: white; max-width: 800px; margin: 0 auto; padding: 60px; }
+        .invoice-title { font-size: 42px; font-weight: bold; color: #333; margin-bottom: 40px; letter-spacing: 3px; }
+        .header-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 50px; }
+        .header-left { font-size: 12px; color: #333; line-height: 1.8; }
+        .header-right { text-align: right; font-size: 12px; }
+        .header-right-company { font-weight: bold; color: #333; margin-bottom: 8px; }
+        .header-right-contact { color: #333; }
+        .invoice-to { margin-bottom: 40px; }
+        .invoice-to-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .invoice-to-name { font-size: 14px; font-weight: bold; color: #333; }
+        .items-table { width: 100%; margin-bottom: 40px; border-collapse: collapse; }
+        .table-header { border-bottom: 2px solid #333; }
+        .table-header th { padding: 12px 0; text-align: left; font-size: 12px; font-weight: bold; color: #333; text-transform: uppercase; letter-spacing: 1px; }
+        .items-table td { padding: 16px 0; font-size: 13px; border-bottom: 2px solid #333; color: #333; }
+        .items-table tr:last-child td { border-bottom: 2px solid #333; }
+        .description-col { text-align: left; }
+        .price-col { text-align: center; }
+        .quantity-col { text-align: center; }
+        .amount-col { text-align: right; }
+        .totals-section { display: flex; justify-content: flex-end; margin-bottom: 50px; }
+        .totals-block { width: 280px; }
+        .total-row { display: grid; grid-template-columns: 1fr auto; gap: 30px; font-size: 13px; margin-bottom: 14px; color: #333; }
+        .total-row.grand-total { font-weight: bold; font-size: 14px; padding-top: 12px; border-top: 2px solid #333; margin-top: 12px; }
+        .total-label { text-align: right; }
+        .total-value { text-align: right; }
+        .notes-section { margin-top: 40px; }
+        .notes-title { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: bold; }
+        .notes-text { font-size: 13px; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="invoice-title">INVOICE</div>
+        
+        <div class="header-row">
+            <div class="header-left">
+                <div>INVOICE NO: {{ invoice.invoice_number }}</div>
+                <div>DATE: {{ invoice.issue_date.strftime('%b %d %Y').upper() }}</div>
+                <div>DUE DATE: {{ invoice.due_date.strftime('%b %d %Y').upper() }}</div>
+            </div>
+            <div class="header-right">
+                <div class="header-right-company">{{ (user.company_name or user.username).upper() }}</div>
+                <div class="header-right-contact">{{ user.company_phone or '' }}</div>
+            </div>
+        </div>
+        
+        <div class="invoice-to">
+            <div class="invoice-to-label">INVOICE TO</div>
+            <div class="invoice-to-name">{{ client.name.upper() }}</div>
+        </div>
+        
+        <table class="items-table">
+            <thead class="table-header">
+                <tr>
+                    <th class="description-col">Description</th>
+                    <th class="price-col">Price</th>
+                    <th class="quantity-col">Quantity</th>
+                    <th class="amount-col">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in line_items %}
+                <tr>
+                    <td class="description-col">{{ item.description }}</td>
+                    <td class="price-col">{{ currency_symbol }}{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td class="quantity-col">{{ item.quantity }}</td>
+                    <td class="amount-col">{{ currency_symbol }}{{ "%.2f"|format(item.total_price) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="totals-section">
+            <div class="totals-block">
+                <div class="total-row">
+                    <span class="total-label">Subtotal</span>
+                    <span class="total-value">{{ currency_symbol }}{{ "%.2f"|format(invoice.subtotal) }}</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Discount</span>
+                    <span class="total-value">{{ currency_symbol }}{{ "%.2f"|format(invoice.discount_amount) }}</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Tax</span>
+                    <span class="total-value">{{ currency_symbol }}{{ "%.2f"|format(invoice.tax_amount) }}</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span class="total-label">Total</span>
+                    <span class="total-value">{{ currency_symbol }}{{ "%.2f"|format(invoice.total_amount) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes-section">
+            <div class="notes-title">NOTES</div>
+            <div class="notes-text">{{ invoice.notes or '' }}</div>
+        </div>
+    </div>
+</body>
+</html>
