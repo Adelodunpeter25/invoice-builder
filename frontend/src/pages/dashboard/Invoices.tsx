@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Download, Send, MoreVertical } from "lucide-react";
+import { Plus, Download, Send, MoreVertical, Eye, Edit, Trash, Copy } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CreateInvoiceModal } from "@/components/dashboard/CreateInvoiceModal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/lib/motion";
 import { toast } from "sonner";
@@ -43,6 +44,30 @@ const Invoices = () => {
     return status ? invoices.filter(inv => inv.status === status) : invoices;
   };
 
+  const handleDownload = (invoice: Invoice) => {
+    toast.success(`Downloading ${invoice.id}`);
+  };
+
+  const handleSend = (invoice: Invoice) => {
+    toast.success(`Sending ${invoice.id} to ${invoice.clientName}`);
+  };
+
+  const handleView = (invoice: Invoice) => {
+    toast.info(`Viewing ${invoice.id}`);
+  };
+
+  const handleEdit = (invoice: Invoice) => {
+    toast.info(`Editing ${invoice.id}`);
+  };
+
+  const handleClone = (invoice: Invoice) => {
+    toast.success(`Cloned ${invoice.id}`);
+  };
+
+  const handleDelete = (invoice: Invoice) => {
+    toast.success(`Deleted ${invoice.id}`);
+  };
+
   const InvoiceTable = ({ invoices }: { invoices: Invoice[] }) => (
     <div className="overflow-x-auto -mx-2 sm:mx-0">
       <table className="min-w-full divide-y divide-border">
@@ -61,7 +86,7 @@ const Invoices = () => {
             <tr key={invoice.id} className="text-xs sm:text-sm">
               <td className="py-4 px-2 sm:px-0 font-medium">{invoice.id}</td>
               <td className="py-4 px-2">{invoice.clientName}</td>
-              <td className="py-4 px-2 font-semibold">${invoice.amount.toLocaleString()}</td>
+              <td className="py-4 px-2 font-semibold">₦{invoice.amount.toLocaleString()}</td>
               <td className="py-4 px-2">
                 <Badge className={getStatusColor(invoice.status)} variant="secondary">
                   {invoice.status}
@@ -69,16 +94,38 @@ const Invoices = () => {
               </td>
               <td className="py-4 px-2 text-muted-foreground hidden sm:table-cell">{invoice.dueDate}</td>
               <td className="py-4 px-2">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => toast.info(`Download ${invoice.id}`)}>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleDownload(invoice)}>
                     <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => toast.info(`Send ${invoice.id}`)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleSend(invoice)}>
                     <Send className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => toast.info(`More options for ${invoice.id}`)}>
-                    <MoreVertical className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
+                        <MoreVertical className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleView(invoice)}>
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleEdit(invoice)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleClone(invoice)}>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Clone
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDelete(invoice)} className="text-destructive">
+                        <Trash className="w-4 h-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </td>
             </tr>

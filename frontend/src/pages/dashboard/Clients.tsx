@@ -5,20 +5,20 @@ import { Plus, Mail, Phone, Edit, Trash } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { AddClientModal } from "@/components/dashboard/AddClientModal";
 import { EditClientModal } from "@/components/dashboard/EditClientModal";
+import { DeleteClientDialog } from "@/components/dashboard/DeleteClientDialog";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/motion";
-import { toast } from "sonner";
-import { useClients, useDeleteClient } from "@/hooks/useClients";
+import { useClients } from "@/hooks/useClients";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Client } from "@/types";
 
 const Clients = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const { data: clientsData, isLoading } = useClients(1, 100);
-  const deleteClient = useDeleteClient();
 
   const clients = clientsData?.items || [];
 
@@ -27,15 +27,9 @@ const Clients = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (clientId: number) => {
-    if (confirm("Are you sure you want to delete this client?")) {
-      try {
-        await deleteClient.mutateAsync(clientId);
-        toast.success("Client deleted successfully!");
-      } catch (error: any) {
-        toast.error(error.message || "Failed to delete client");
-      }
-    }
+  const handleDelete = (client: Client) => {
+    setSelectedClient(client);
+    setIsDeleteDialogOpen(true);
   };
 
   if (isLoading) {
@@ -97,7 +91,7 @@ const Clients = () => {
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleDelete(client.id)} className="text-destructive">
+                              <DropdownMenuItem onClick={() => handleDelete(client)} className="text-destructive">
                                 <Trash className="w-4 h-4 mr-2" />
                                 Delete
                               </DropdownMenuItem>
@@ -133,6 +127,12 @@ const Clients = () => {
 
       <AddClientModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
       <EditClientModal open={isEditModalOpen} onOpenChange={setIsEditModalOpen} client={selectedClient} />
+      <DeleteClientDialog 
+        open={isDeleteDialogOpen} 
+        onOpenChange={setIsDeleteDialogOpen} 
+        clientId={selectedClient?.id || null}
+        clientName={selectedClient?.name || ""}
+      />
     </SidebarProvider>
   );
 };
