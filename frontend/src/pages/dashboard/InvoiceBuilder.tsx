@@ -31,6 +31,7 @@ export default function InvoiceBuilder() {
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState("");
   const [notes, setNotes] = useState("");
+  const [templateId, setTemplateId] = useState("");
   const [lineItems, setLineItems] = useState<LineItem[]>([
     { description: "", quantity: 1, unit_price: 0 }
   ]);
@@ -78,6 +79,7 @@ export default function InvoiceBuilder() {
           notes: notes || undefined,
           discount_amount: discountAmount,
           tax_amount: taxAmount,
+          template_id: templateId ? parseInt(templateId) : undefined,
           line_items: lineItems.map(item => ({
             description: item.description,
             quantity: item.quantity,
@@ -219,6 +221,20 @@ export default function InvoiceBuilder() {
                           {client.name}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Template</Label>
+                  <Select value={templateId} onValueChange={setTemplateId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select template (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Modern Template</SelectItem>
+                      <SelectItem value="2">Professional Template</SelectItem>
+                      <SelectItem value="3">Minimal Template</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
