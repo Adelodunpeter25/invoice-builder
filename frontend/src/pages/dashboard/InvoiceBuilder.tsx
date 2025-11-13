@@ -134,84 +134,245 @@ export default function InvoiceBuilder() {
             {/* Preview - Left Side */}
             <div className="w-1/2 p-6 bg-muted/30 overflow-auto">
               <Card className="max-w-2xl mx-auto p-8 bg-white">
-                <div className="mb-8">
-                  <h1 className="text-3xl font-bold mb-2">INVOICE</h1>
-                  <p className="text-sm text-muted-foreground">Invoice #{new Date().getTime()}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-8 mb-8">
-                  <div>
-                    <h3 className="text-xs font-bold text-muted-foreground mb-2">BILL TO</h3>
-                    <p className="font-semibold">{selectedClient?.name || "Select a client"}</p>
-                    {selectedClient?.email && <p className="text-sm">{selectedClient.email}</p>}
-                    {selectedClient?.address && <p className="text-sm">{selectedClient.address}</p>}
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-muted-foreground mb-2">FROM</h3>
-                    <p className="font-semibold">{user?.company_name || user?.username}</p>
-                    {user?.email && <p className="text-sm">{user.email}</p>}
-                    {user?.company_address && <p className="text-sm">{user.company_address}</p>}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Issue Date:</span>
-                    <span className="ml-2 font-medium">{issueDate || "Not set"}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Due Date:</span>
-                    <span className="ml-2 font-medium">{dueDate || "Not set"}</span>
-                  </div>
-                </div>
-
-                <table className="w-full mb-8">
-                  <thead className="border-b-2 border-border">
-                    <tr className="text-left text-xs font-bold text-muted-foreground">
-                      <th className="pb-2">DESCRIPTION</th>
-                      <th className="pb-2 text-center">QTY</th>
-                      <th className="pb-2 text-right">PRICE</th>
-                      <th className="pb-2 text-right">TOTAL</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lineItems.map((item, i) => (
-                      <tr key={i} className="border-b border-border">
-                        <td className="py-3">{item.description || "Item description"}</td>
-                        <td className="py-3 text-center">{item.quantity}</td>
-                        <td className="py-3 text-right">{currencySymbol}{item.unit_price.toFixed(2)}</td>
-                        <td className="py-3 text-right">{currencySymbol}{(item.quantity * item.unit_price).toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div className="flex justify-end mb-8">
-                  <div className="w-64 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Subtotal:</span>
-                      <span>{currencySymbol}{subtotal.toFixed(2)}</span>
+                {/* Template 1 - Modern */}
+                {(!templateId || templateId === "1") && (
+                  <>
+                    <div className="mb-8">
+                      <h1 className="text-3xl font-bold mb-2">INVOICE</h1>
+                      <p className="text-sm text-muted-foreground">Invoice #{new Date().getTime()}</p>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Discount:</span>
-                      <span>-{currencySymbol}{discountAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Tax:</span>
-                      <span>{currencySymbol}{taxAmount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg border-t-2 border-border pt-2">
-                      <span>Total:</span>
-                      <span>{currencySymbol}{total.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
 
-                {notes && (
-                  <div className="border-t border-border pt-4">
-                    <h3 className="text-xs font-bold text-muted-foreground mb-2">NOTES</h3>
-                    <p className="text-sm">{notes}</p>
-                  </div>
+                    <div className="grid grid-cols-2 gap-8 mb-8">
+                      <div>
+                        <h3 className="text-xs font-bold text-muted-foreground mb-2">BILL TO</h3>
+                        <p className="font-semibold">{selectedClient?.name || "Select a client"}</p>
+                        {selectedClient?.email && <p className="text-sm">{selectedClient.email}</p>}
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-bold text-muted-foreground mb-2">FROM</h3>
+                        <p className="font-semibold">{user?.company_name || user?.username}</p>
+                        {user?.email && <p className="text-sm">{user.email}</p>}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Issue Date:</span>
+                        <span className="ml-2 font-medium">{issueDate || "Not set"}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Due Date:</span>
+                        <span className="ml-2 font-medium">{dueDate || "Not set"}</span>
+                      </div>
+                    </div>
+
+                    <table className="w-full mb-8">
+                      <thead className="border-b-2 border-border">
+                        <tr className="text-left text-xs font-bold text-muted-foreground">
+                          <th className="pb-2">DESCRIPTION</th>
+                          <th className="pb-2 text-center">QTY</th>
+                          <th className="pb-2 text-right">PRICE</th>
+                          <th className="pb-2 text-right">TOTAL</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lineItems.map((item, i) => (
+                          <tr key={i} className="border-b border-border">
+                            <td className="py-3">{item.description || "Item description"}</td>
+                            <td className="py-3 text-center">{item.quantity}</td>
+                            <td className="py-3 text-right">{currencySymbol}{item.unit_price.toFixed(2)}</td>
+                            <td className="py-3 text-right">{currencySymbol}{(item.quantity * item.unit_price).toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="flex justify-end mb-8">
+                      <div className="w-64 space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Subtotal:</span>
+                          <span>{currencySymbol}{subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Discount:</span>
+                          <span>-{currencySymbol}{discountAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Tax:</span>
+                          <span>{currencySymbol}{taxAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg border-t-2 border-border pt-2">
+                          <span>Total:</span>
+                          <span>{currencySymbol}{total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {notes && (
+                      <div className="border-t border-border pt-4">
+                        <h3 className="text-xs font-bold text-muted-foreground mb-2">NOTES</h3>
+                        <p className="text-sm">{notes}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Template 2 - Professional */}
+                {templateId === "2" && (
+                  <>
+                    <div className="flex justify-between mb-8">
+                      <div></div>
+                      <div className="text-right">
+                        <h1 className="text-4xl font-bold mb-2">INVOICE</h1>
+                        <p className="text-sm text-muted-foreground">{user?.company_name || user?.username}</p>
+                        <p className="text-xs text-muted-foreground">{user?.email}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-12 mb-8">
+                      <div>
+                        <h3 className="text-xs font-bold mb-2">Addressed to:</h3>
+                        <p className="font-semibold">{selectedClient?.name || "Select a client"}</p>
+                        {selectedClient?.email && <p className="text-sm">{selectedClient.email}</p>}
+                      </div>
+                      <div className="text-right">
+                        <div className="mb-2">
+                          <span className="text-xs font-bold">Number:</span>
+                          <p className="text-sm">#{new Date().getTime()}</p>
+                        </div>
+                        <div className="mb-2">
+                          <span className="text-xs font-bold">Issue Date:</span>
+                          <p className="text-sm">{issueDate || "Not set"}</p>
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold">Due Date:</span>
+                          <p className="text-sm">{dueDate || "Not set"}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <table className="w-full mb-8">
+                      <thead className="bg-gray-900 text-white">
+                        <tr className="text-left text-sm">
+                          <th className="p-3">Items</th>
+                          <th className="p-3">Quantity</th>
+                          <th className="p-3 text-right">Price</th>
+                          <th className="p-3 text-right">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lineItems.map((item, i) => (
+                          <tr key={i} className="border-b">
+                            <td className="py-3">{item.description || "Item description"}</td>
+                            <td className="py-3 text-center">{item.quantity}</td>
+                            <td className="py-3 text-right">{currencySymbol}{item.unit_price.toFixed(2)}</td>
+                            <td className="py-3 text-right font-medium">{currencySymbol}{(item.quantity * item.unit_price).toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="flex justify-end mb-8">
+                      <div className="w-64 space-y-3">
+                        <div className="flex justify-between text-sm">
+                          <span>Subtotal:</span>
+                          <span>{currencySymbol}{subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Discount:</span>
+                          <span>{currencySymbol}{discountAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Tax:</span>
+                          <span>{currencySymbol}{taxAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-bold border-t-2 pt-3">
+                          <span>Total:</span>
+                          <span>{currencySymbol}{total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {notes && (
+                      <div className="border-t pt-6">
+                        <h3 className="text-sm font-bold mb-2">Notes</h3>
+                        <p className="text-sm text-muted-foreground">{notes}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Template 3 - Minimal */}
+                {templateId === "3" && (
+                  <>
+                    <h1 className="text-5xl font-bold mb-10 tracking-wider">INVOICE</h1>
+
+                    <div className="grid grid-cols-2 gap-8 mb-12">
+                      <div className="text-sm">
+                        <p className="font-bold">INVOICE NO: #{new Date().getTime()}</p>
+                        <p>DATE: {issueDate?.toUpperCase() || "NOT SET"}</p>
+                        <p>DUE DATE: {dueDate?.toUpperCase() || "NOT SET"}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-lg">{(user?.company_name || user?.username)?.toUpperCase()}</p>
+                        <p className="text-sm">{user?.company_phone}</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-8">
+                      <p className="text-xs text-muted-foreground tracking-wider mb-2">INVOICE TO</p>
+                      <p className="font-bold text-lg">{selectedClient?.name?.toUpperCase() || "SELECT A CLIENT"}</p>
+                    </div>
+
+                    <table className="w-full mb-8">
+                      <thead className="border-b-2 border-black">
+                        <tr className="text-left text-xs font-bold tracking-wider">
+                          <th className="pb-3">DESCRIPTION</th>
+                          <th className="pb-3 text-center">PRICE</th>
+                          <th className="pb-3 text-center">QUANTITY</th>
+                          <th className="pb-3 text-right">AMOUNT</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lineItems.map((item, i) => (
+                          <tr key={i} className="border-b-2 border-black">
+                            <td className="py-4">{item.description || "Item description"}</td>
+                            <td className="py-4 text-center">{currencySymbol}{item.unit_price.toFixed(2)}</td>
+                            <td className="py-4 text-center">{item.quantity}</td>
+                            <td className="py-4 text-right">{currencySymbol}{(item.quantity * item.unit_price).toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="flex justify-end mb-12">
+                      <div className="w-72 space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-right">Subtotal</span>
+                          <span className="text-right">{currencySymbol}{subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-right">Discount</span>
+                          <span className="text-right">{currencySymbol}{discountAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-right">Tax</span>
+                          <span className="text-right">{currencySymbol}{taxAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg border-t-2 border-black pt-3">
+                          <span className="text-right">Total</span>
+                          <span className="text-right">{currencySymbol}{total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {notes && (
+                      <div>
+                        <p className="text-xs text-muted-foreground tracking-wider mb-3">NOTES</p>
+                        <p className="text-sm">{notes}</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </Card>
             </div>
