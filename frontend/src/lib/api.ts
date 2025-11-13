@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 interface RequestOptions extends RequestInit {
   token?: string;
+  skipRefresh?: boolean;
 }
 
 /**
@@ -15,7 +16,7 @@ async function request<T>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { token, ...fetchOptions } = options;
+  const { token, skipRefresh, ...fetchOptions } = options;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -30,6 +31,28 @@ async function request<T>(
     ...fetchOptions,
     headers,
   });
+
+  if (response.status === 401 && !skipRefresh && endpoint !== '/api/v1/auth/refresh') {
+    const refreshToken = getRefreshToken();
+    if (refreshToken) {
+      try {
+        const refreshResponse = await post<{ access_token: string; refresh_token: string }>(
+          '/api/v1/auth/refresh',
+          { refresh_token: refreshToken },
+          undefined
+        );
+        setToken(refreshResponse.access_token);
+        setRefreshToken(refreshResponse.refresh_token);
+        
+        return request<T>(endpoint, { ...options, token: refreshResponse.access_token, skipRefresh: true });
+      } catch {
+        removeToken();
+        removeRefreshToken();
+        window.location.href = '/';
+        throw new Error('Session expired. Please login again.');
+      }
+    }
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({

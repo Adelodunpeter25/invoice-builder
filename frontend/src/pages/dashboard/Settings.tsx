@@ -92,6 +92,20 @@ const Settings = () => {
                       <Label htmlFor="email">Email</Label>
                       <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
+                    <Button onClick={handleSaveProfile} disabled={updateUser.isPending}>
+                      {updateUser.isPending ? "Saving..." : "Save Changes"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={fadeIn}>
+                <Card className="shadow-card border-border">
+                  <CardHeader>
+                    <CardTitle>Company Information</CardTitle>
+                    <CardDescription>Details that appear on your invoices</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="company">Company Name</Label>
                       <Input id="company" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your Company Ltd." />
