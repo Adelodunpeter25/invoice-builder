@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -5,15 +6,46 @@ import { Label } from "@/components/ui/label";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUpdateUser } from "@/hooks/useAuthApi";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/motion";
 import { toast } from "sonner";
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, refetchUser } = useAuth();
+  const updateUser = useUpdateUser();
 
-  const handleSave = () => {
-    toast.success("Settings saved successfully!");
+  const [email, setEmail] = useState(user?.email || "");
+  const [companyName, setCompanyName] = useState(user?.company_name || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateUser.mutateAsync({ email, company_name: companyName });
+      await refetchUser();
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      await updateUser.mutateAsync({ current_password: currentPassword, new_password: newPassword });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Password updated successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update password");
+    }
   };
 
   return (
@@ -42,44 +74,20 @@ const Settings = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input id="name" defaultValue={user?.name} />
+                      <Label htmlFor="username">Username</Label>
+                      <Input id="username" value={user?.username} disabled />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" defaultValue={user?.email} />
+                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
-                    <Button onClick={handleSave}>Save Changes</Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={fadeIn}>
-                <Card className="shadow-card border-border">
-                  <CardHeader>
-                    <CardTitle>Business Information</CardTitle>
-                    <CardDescription>Details that appear on your invoices</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="company">Company Name</Label>
-                      <Input id="company" placeholder="Your Company Ltd." />
+                      <Input id="company" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your Company Ltd." />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Address</Label>
-                      <Input id="address" placeholder="123 Business St." />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City</Label>
-                        <Input id="city" placeholder="City" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Input id="country" placeholder="Country" />
-                      </div>
-                    </div>
-                    <Button onClick={handleSave}>Save Changes</Button>
+                    <Button onClick={handleSaveProfile} disabled={updateUser.isPending}>
+                      {updateUser.isPending ? "Saving..." : "Save Changes"}
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -93,17 +101,19 @@ const Settings = () => {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="current">Current Password</Label>
-                      <Input id="current" type="password" />
+                      <Input id="current" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="new">New Password</Label>
-                      <Input id="new" type="password" />
+                      <Input id="new" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="confirm">Confirm Password</Label>
-                      <Input id="confirm" type="password" />
+                      <Input id="confirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                     </div>
-                    <Button onClick={handleSave}>Update Password</Button>
+                    <Button onClick={handleChangePassword} disabled={updateUser.isPending}>
+                      {updateUser.isPending ? "Updating..." : "Update Password"}
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>

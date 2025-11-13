@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import BadRequestException, UnauthorizedException
 from app.models.user import User
 from app.schemas.auth import TokenResponse, UserLogin, UserRegister
+from app.schemas.user import UserUpdate
 from app.utils.auth import (
     create_access_token,
     create_refresh_token,
@@ -59,4 +60,29 @@ async def get_user_by_id(db: AsyncSession, user_id: int) -> User:
     user = result.scalar_one_or_none()
     if not user:
         raise UnauthorizedException("User not found")
+    return user
+
+
+async def update_user(db: AsyncSession, user_id: int, data: UserUpdate) -> User:
+    """Update user profile."""
+    user = await get_user_by_id(db, user_id)
+
+    if data.email and data.email != user.email:
+        result = await db.execute(select(User).where(User.email == data.email))
+        if result.scalar_one_or_none():
+            raise BadRequestException("Email already in use")
+        user.email = data.email
+
+    if data.company_name is not None:
+        user.company_name = data.company_name
+
+    if data.new_password:
+        if not data.current_password:
+            raise BadRequestException("Current password is required")
+        if not verify_password(data.current_password, user.hashed_password):
+            raise BadRequestException("Current password is incorrect")
+        user.hashed_password = hash_password(data.new_password)
+
+    await db.flush()
+    await db.refresh(user)
     return user

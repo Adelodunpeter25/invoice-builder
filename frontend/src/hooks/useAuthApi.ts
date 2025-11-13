@@ -57,3 +57,12 @@ export function useLogout() {
     api.removeRefreshToken();
   };
 }
+
+export function useUpdateUser() {
+  return useMutation({
+    mutationFn: async (data: { email?: string; company_name?: string; current_password?: string; new_password?: string }) => {
+      const token = api.getToken();
+      return api.put<UserResponse>('/api/v1/auth/me', data, token || undefined);
+    },
+  });
+}

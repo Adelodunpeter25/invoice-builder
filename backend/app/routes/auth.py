@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from app.core.deps import DBSession
 from app.core.exceptions import UnauthorizedException
 from app.schemas.auth import TokenRefresh, TokenResponse, UserLogin, UserRegister
-from app.schemas.user import UserResponse
-from app.services.auth import get_user_by_id, login_user, register_user
+from app.schemas.user import UserResponse, UserUpdate
+from app.services.auth import get_user_by_id, login_user, register_user, update_user
 from app.utils.auth import create_access_token, create_refresh_token, decode_token
 from app.utils.jwt import CurrentUser
 
@@ -50,4 +50,11 @@ async def refresh_token(data: TokenRefresh, db: DBSession):
 async def get_current_user(user_id: CurrentUser, db: DBSession):
     """Get current authenticated user."""
     user = await get_user_by_id(db, user_id)
+    return user
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_current_user(data: UserUpdate, user_id: CurrentUser, db: DBSession):
+    """Update current user profile."""
+    user = await update_user(db, user_id, data)
     return user
