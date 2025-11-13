@@ -1,0 +1,3 @@
+database_url: postgresql://invoice_user:invoice_pass@localhost:5432/invoice_db
+migrations_dir: app/migrations
+models_module: app.models
