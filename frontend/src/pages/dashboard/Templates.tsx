@@ -12,7 +12,7 @@ const templates = [
     name: "Modern Template", 
     description: "Clean and modern design with dark header",
     preview: (
-      <div className="w-full h-full border rounded-lg p-4 bg-white text-xs space-y-2">
+      <div className="w-full h-full bg-white text-xs space-y-2 p-4">
         <div className="bg-gray-900 text-white p-2 rounded">
           <div className="font-bold">INVOICE</div>
         </div>
@@ -48,7 +48,7 @@ const templates = [
     name: "Professional Template", 
     description: "Professional layout with right-aligned header",
     preview: (
-      <div className="w-full h-full border rounded-lg p-4 bg-white text-xs space-y-2">
+      <div className="w-full h-full bg-white text-xs space-y-2 p-4">
         <div className="flex justify-between items-start">
           <div className="font-bold text-lg">INVOICE</div>
           <div className="text-right">
@@ -82,7 +82,7 @@ const templates = [
     name: "Minimal Template", 
     description: "Minimalist design with bold typography",
     preview: (
-      <div className="w-full h-full border rounded-lg p-4 bg-white text-xs space-y-2">
+      <div className="w-full h-full bg-white text-xs space-y-2 p-4">
         <div className="font-bold text-2xl border-b-4 border-black pb-1">INVOICE</div>
         <div className="grid grid-cols-2 gap-2 text-[10px]">
           <div>
@@ -151,7 +151,7 @@ export default function Templates() {
                   onClick={() => handleUseTemplate(template.id)}
                 >
                   <div className="h-full bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-primary flex flex-col">
-                    <div className="flex-1 p-6 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
+                    <div className="flex-1 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 overflow-hidden">
                       {template.preview}
                     </div>
                     <div className="p-4 bg-white border-t border-gray-100">
