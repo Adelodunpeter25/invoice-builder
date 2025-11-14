@@ -33,12 +33,12 @@ const templates = [
           </div>
           <div className="flex justify-between text-gray-600 mt-1">
             <span>Service</span>
-            <span>$100.00</span>
+            <span>₦100.00</span>
           </div>
         </div>
         <div className="border-t pt-2 flex justify-between font-bold">
           <span>Total</span>
-          <span>$100.00</span>
+          <span>₦100.00</span>
         </div>
       </div>
     )
@@ -67,12 +67,12 @@ const templates = [
         <div className="border-t pt-2">
           <div className="flex justify-between text-gray-600">
             <span>Service</span>
-            <span>$100.00</span>
+            <span>₦100.00</span>
           </div>
         </div>
         <div className="border-t pt-2 flex justify-between font-bold">
           <span>Total</span>
-          <span>$100.00</span>
+          <span>₦100.00</span>
         </div>
       </div>
     )
@@ -101,12 +101,12 @@ const templates = [
           </div>
           <div className="flex justify-between text-gray-600 mt-1">
             <span>Service</span>
-            <span>$100.00</span>
+            <span>₦100.00</span>
           </div>
         </div>
         <div className="border-t-4 border-black pt-2 flex justify-between font-bold text-sm">
           <span>TOTAL</span>
-          <span>$100.00</span>
+          <span>₦100.00</span>
         </div>
       </div>
     )
@@ -155,7 +155,7 @@ export default function Templates() {
                       {template.preview}
                     </div>
                     <div className="p-4 bg-white border-t border-gray-100">
-                      <p className="text-sm font-medium text-center text-gray-700 mb-3">{template.name}</p>
+                      <p className="text-xs font-medium text-center text-gray-700 mb-3">{template.name}</p>
                       <Button className="w-full" size="sm" onClick={(e) => {
                         e.stopPropagation();
                         handleUseTemplate(template.id);
