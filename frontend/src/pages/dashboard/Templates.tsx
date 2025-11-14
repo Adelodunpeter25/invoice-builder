@@ -145,7 +145,7 @@ export default function Templates() {
             >
               {templates.map((template) => (
                 <motion.div key={template.id} variants={fadeIn}>
-                  <Card className="shadow-sm border h-full flex flex-col">
+                  <Card className="shadow-sm border-0 h-full flex flex-col">
                     <CardContent className="flex-1 flex flex-col gap-4 p-4">
                       <div className="bg-gray-50 p-2 rounded-lg">
                         {template.preview}
