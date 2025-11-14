@@ -71,8 +71,10 @@ def generate_invoice_pdf(invoice: Invoice, client: Client, user: User, template_
     c.setFillColorRGB(0, 0, 0)
     c.setFont("Helvetica", 14)
     y -= 30
+    subtotal = 0
     for item in invoice.line_items:
         total_price = item.quantity * item.unit_price
+        subtotal += total_price
         c.drawString(50, y, item.description[:30])
         c.drawString(300, y, f"{currency_symbol}{item.unit_price:.2f}")
         c.drawString(400, y, str(item.quantity))
@@ -82,20 +84,11 @@ def generate_invoice_pdf(invoice: Invoice, client: Client, user: User, template_
     # Totals
     y -= 30
     c.drawString(400, y, "Subtotal")
-    c.drawString(500, y, f"{currency_symbol}{invoice.subtotal:.2f}")
+    c.drawString(500, y, f"{currency_symbol}{subtotal:.2f}")
     
     y -= 20
-    c.drawString(400, y, "Discount")
-    c.drawString(500, y, f"{currency_symbol}{invoice.discount_amount:.2f}")
-    
-    y -= 20
-    c.drawString(400, y, "Tax")
-    c.drawString(500, y, f"{currency_symbol}{invoice.tax_amount:.2f}")
-    
-    y -= 30
-    c.setFont("Helvetica-Bold", 16)
     c.drawString(400, y, "Total")
-    c.drawString(500, y, f"{currency_symbol}{invoice.total_amount:.2f}")
+    c.drawString(500, y, f"{currency_symbol}{invoice.amount:.2f}")
     
     # Notes
     if invoice.notes:
