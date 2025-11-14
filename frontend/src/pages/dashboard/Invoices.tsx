@@ -19,6 +19,7 @@ import { useInvoices, useDeleteInvoice, useCloneInvoice } from "@/hooks/useInvoi
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getCurrencySymbol, formatCurrency } from "@/lib/currency";
+import { CurrencyAmount } from "@/components/CurrencyAmount";
 
 const Invoices = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const Invoices = () => {
   const cloneInvoice = useCloneInvoice();
 
   const currencySymbol = getCurrencySymbol(user?.preferred_currency || 'NGN');
+  const userCurrency = user?.preferred_currency || 'NGN';
   const invoices = allInvoices?.items || [];
 
   const getStatusColor = (status: string) => {
@@ -137,7 +139,13 @@ const Invoices = () => {
               <tr key={invoice.id} className="text-xs sm:text-sm">
                 <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
                 <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
-                <td className="py-4 px-2 font-semibold">{currencySymbol}{formatCurrency(invoice.amount)}</td>
+                <td className="py-4 px-2 font-semibold">
+                  <CurrencyAmount 
+                    amount={invoice.amount} 
+                    fromCurrency={invoice.currency} 
+                    toCurrency={userCurrency}
+                  />
+                </td>
                 <td className="py-4 px-2">
                   <Badge className={getStatusColor(invoice.status)} variant="secondary">
                     {invoice.status}

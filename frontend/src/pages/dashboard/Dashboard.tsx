@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useInvoices, useDeleteInvoice } from "@/hooks/useInvoices";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { getCurrencySymbol, formatCurrency } from "@/lib/currency";
+import { CurrencyAmount } from "@/components/CurrencyAmount";
+import { useExchangeRates } from "@/hooks/useCurrency";
 
 const Dashboard = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -21,18 +23,37 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { data: invoicesData, isLoading } = useInvoices({ page: 1, page_size: 5 });
   const deleteInvoice = useDeleteInvoice();
+  const userCurrency = user?.preferred_currency || 'NGN';
+  const { data: ratesData } = useExchangeRates(userCurrency);
 
   const invoices = invoicesData?.items || [];
-  const currencySymbol = getCurrencySymbol(user?.preferred_currency || 'NGN');
+  const currencySymbol = getCurrencySymbol(userCurrency);
 
-  const stats = {
-    totalRevenue: invoices.reduce((sum: number, inv: any) => sum + (parseFloat(inv.amount) || 0), 0),
+  const convertAmount = (amount: number, fromCurrency: string): number => {
+    if (fromCurrency === userCurrency || !ratesData?.conversion_rates) {
+      return amount;
+    }
+    // Convert from invoice currency to user currency
+    // First convert to base (userCurrency), then to target
+    const rate = ratesData.conversion_rates[fromCurrency];
+    if (!rate) return amount;
+    return amount / rate;
+  };
+
+  const stats = useMemo(() => ({
+    totalRevenue: invoices.reduce((sum: number, inv: any) => {
+      const amount = parseFloat(inv.amount) || 0;
+      return sum + convertAmount(amount, inv.currency);
+    }, 0),
     paidInvoices: invoices.filter((inv: any) => inv.status === "paid").length,
     pendingAmount: invoices
       .filter((inv: any) => inv.status === "pending")
-      .reduce((sum: number, inv: any) => sum + (parseFloat(inv.amount) || 0), 0),
+      .reduce((sum: number, inv: any) => {
+        const amount = parseFloat(inv.amount) || 0;
+        return sum + convertAmount(amount, inv.currency);
+      }, 0),
     overdueCount: invoices.filter((inv: any) => inv.status === "overdue").length,
-  };
+  }), [invoices, ratesData, userCurrency]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -226,7 +247,13 @@ const Dashboard = () => {
                               <tr key={invoice.id} className="text-xs sm:text-sm">
                                 <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
                                 <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
-                                <td className="py-4 px-2 font-semibold">{currencySymbol}{formatCurrency(invoice.amount)}</td>
+                                <td className="py-4 px-2 font-semibold">
+                                  <CurrencyAmount 
+                                    amount={invoice.amount} 
+                                    fromCurrency={invoice.currency} 
+                                    toCurrency={userCurrency}
+                                  />
+                                </td>
                                 <td className="py-4 px-2">
                                   <Badge className={getStatusColor(invoice.status)} variant="secondary">
                                     {invoice.status}

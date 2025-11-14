@@ -18,3 +18,12 @@ export const getCurrencySymbol = (currency: string): string => {
   };
   return symbols[currency] || currency;
 };
+
+export const convertAndFormatCurrency = (
+  amount: number | string,
+  convertedAmount: number | undefined,
+  targetCurrency: string
+): string => {
+  const displayAmount = convertedAmount ?? (typeof amount === 'string' ? parseFloat(amount) : amount);
+  return formatCurrency(displayAmount, targetCurrency);
+};
