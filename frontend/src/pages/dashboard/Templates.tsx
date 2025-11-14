@@ -144,20 +144,25 @@ export default function Templates() {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {templates.map((template) => (
-                <motion.div key={template.id} variants={fadeIn}>
-                  <Card className="shadow-sm border-0 h-full flex flex-col">
-                    <CardContent className="flex-1 flex flex-col gap-4 p-4">
-                      <div className="bg-gray-50 p-4 rounded-lg flex-1">
+                <motion.div 
+                  key={template.id} 
+                  variants={fadeIn}
+                  className="group cursor-pointer"
+                  onClick={() => handleUseTemplate(template.id)}
+                >
+                  <div className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-primary/50">
+                    <div className="aspect-[3/4] bg-gray-50 p-6 flex items-center justify-center">
+                      <div className="w-full transform group-hover:scale-105 transition-transform duration-300">
                         {template.preview}
                       </div>
-                      <div className="space-y-2">
-                        <h3 className="font-semibold text-center">{template.name}</h3>
-                        <Button onClick={() => handleUseTemplate(template.id)} className="w-full">
-                          Use Template
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="p-4 border-t">
+                      <h3 className="text-sm font-medium text-center mb-3">{template.name}</h3>
+                      <Button className="w-full" size="sm">
+                        Use Template
+                      </Button>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
