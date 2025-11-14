@@ -145,20 +145,17 @@ export default function Templates() {
             >
               {templates.map((template) => (
                 <motion.div key={template.id} variants={fadeIn}>
-                  <Card className="shadow-card border-border h-full flex flex-col">
-                    <CardHeader>
-                      <CardTitle>{template.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-1 flex flex-col justify-between gap-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
-                        <div className="bg-gray-50 p-2 rounded-lg">
-                          {template.preview}
-                        </div>
+                  <Card className="shadow-sm border h-full flex flex-col">
+                    <CardContent className="flex-1 flex flex-col gap-4 p-4">
+                      <div className="bg-gray-50 p-2 rounded-lg">
+                        {template.preview}
                       </div>
-                      <Button onClick={() => handleUseTemplate(template.id)} className="w-full">
-                        Use Template
-                      </Button>
+                      <div className="space-y-2">
+                        <h3 className="font-semibold text-center">{template.name}</h3>
+                        <Button onClick={() => handleUseTemplate(template.id)} className="w-full">
+                          Use Template
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
