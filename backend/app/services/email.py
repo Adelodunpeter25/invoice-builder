@@ -1,5 +1,6 @@
 """Email service using Resend."""
 
+import base64
 from pathlib import Path
 
 import resend
@@ -47,7 +48,7 @@ async def send_invoice_email(
             params["attachments"] = [
                 {
                     "filename": f"invoice_{invoice.invoice_number}.pdf",
-                    "content": pdf_content,
+                    "content": base64.b64encode(pdf_content).decode('utf-8'),
                 }
             ]
         
