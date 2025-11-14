@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useInvoices, useDeleteInvoice, useCloneInvoice } from "@/hooks/useInvoices";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getCurrencySymbol } from "@/lib/currency";
+import { getCurrencySymbol, formatCurrency } from "@/lib/currency";
 
 const Invoices = () => {
   const navigate = useNavigate();
@@ -137,7 +137,7 @@ const Invoices = () => {
               <tr key={invoice.id} className="text-xs sm:text-sm">
                 <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
                 <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
-                <td className="py-4 px-2 font-semibold">{currencySymbol}{parseFloat(invoice.amount || 0).toLocaleString()}</td>
+                <td className="py-4 px-2 font-semibold">{currencySymbol}{formatCurrency(invoice.amount)}</td>
                 <td className="py-4 px-2">
                   <Badge className={getStatusColor(invoice.status)} variant="secondary">
                     {invoice.status}
