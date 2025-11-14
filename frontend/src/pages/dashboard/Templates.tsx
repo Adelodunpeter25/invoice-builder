@@ -147,18 +147,21 @@ export default function Templates() {
                 <motion.div 
                   key={template.id} 
                   variants={fadeIn}
-                  className="group cursor-pointer"
+                  className="group cursor-pointer h-full"
                   onClick={() => handleUseTemplate(template.id)}
                 >
-                  <div className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-primary/50">
-                    <div className="aspect-[3/4] bg-gray-50 p-6 flex items-center justify-center">
-                      <div className="w-full transform group-hover:scale-105 transition-transform duration-300">
+                  <div className="h-full bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-primary flex flex-col">
+                    <div className="flex-1 bg-gray-50 p-8 flex items-center justify-center">
+                      <div className="w-full h-full flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
                         {template.preview}
                       </div>
                     </div>
-                    <div className="p-4 border-t">
-                      <h3 className="text-sm font-medium text-center mb-3">{template.name}</h3>
-                      <Button className="w-full" size="sm">
+                    <div className="p-4 bg-white border-t border-gray-100">
+                      <p className="text-sm font-medium text-center text-gray-700 mb-3">{template.name}</p>
+                      <Button className="w-full" size="sm" onClick={(e) => {
+                        e.stopPropagation();
+                        handleUseTemplate(template.id);
+                      }}>
                         Use Template
                       </Button>
                     </div>
