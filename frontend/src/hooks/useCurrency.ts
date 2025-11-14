@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { get } from '@/lib/api';
+import { getToken } from '@/lib/auth';
 
 export const useConvertCurrency = (amount: number, fromCurrency: string, toCurrency: string) => {
   return useQuery({
@@ -8,10 +9,11 @@ export const useConvertCurrency = (amount: number, fromCurrency: string, toCurre
       if (fromCurrency === toCurrency) {
         return { converted_amount: amount };
       }
-      const response = await api.get('/api/v1/currency/convert', {
-        params: { amount, from: fromCurrency, to: toCurrency }
-      });
-      return response.data;
+      const token = getToken();
+      return get<{ converted_amount: number }>(
+        `/api/v1/currency/convert?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`,
+        token
+      );
     },
     enabled: !!amount && !!fromCurrency && !!toCurrency,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -22,10 +24,8 @@ export const useExchangeRates = (baseCurrency: string = 'NGN') => {
   return useQuery({
     queryKey: ['exchange-rates', baseCurrency],
     queryFn: async () => {
-      const response = await api.get('/api/v1/currency/rates', {
-        params: { base: baseCurrency }
-      });
-      return response.data;
+      const token = getToken();
+      return get<any>(`/api/v1/currency/rates?base=${baseCurrency}`, token);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
