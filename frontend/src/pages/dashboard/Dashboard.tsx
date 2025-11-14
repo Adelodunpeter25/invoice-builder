@@ -26,11 +26,11 @@ const Dashboard = () => {
   const currencySymbol = getCurrencySymbol(user?.preferred_currency || 'NGN');
 
   const stats = {
-    totalRevenue: invoices.reduce((sum: number, inv: any) => sum + inv.total_amount, 0),
+    totalRevenue: invoices.reduce((sum: number, inv: any) => sum + (parseFloat(inv.amount) || 0), 0),
     paidInvoices: invoices.filter((inv: any) => inv.status === "paid").length,
     pendingAmount: invoices
       .filter((inv: any) => inv.status === "pending")
-      .reduce((sum: number, inv: any) => sum + inv.total_amount, 0),
+      .reduce((sum: number, inv: any) => sum + (parseFloat(inv.amount) || 0), 0),
     overdueCount: invoices.filter((inv: any) => inv.status === "overdue").length,
   };
 
@@ -226,7 +226,7 @@ const Dashboard = () => {
                               <tr key={invoice.id} className="text-xs sm:text-sm">
                                 <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
                                 <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
-                                <td className="py-4 px-2 font-semibold">{currencySymbol}{invoice.total_amount.toLocaleString()}</td>
+                                <td className="py-4 px-2 font-semibold">{currencySymbol}{parseFloat(invoice.amount || 0).toLocaleString()}</td>
                                 <td className="py-4 px-2">
                                   <Badge className={getStatusColor(invoice.status)} variant="secondary">
                                     {invoice.status}

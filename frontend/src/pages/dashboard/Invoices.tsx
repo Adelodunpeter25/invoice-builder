@@ -137,7 +137,7 @@ const Invoices = () => {
               <tr key={invoice.id} className="text-xs sm:text-sm">
                 <td className="py-4 px-2 sm:px-0 font-medium">{invoice.invoice_number}</td>
                 <td className="py-4 px-2">{invoice.client?.name || 'N/A'}</td>
-                <td className="py-4 px-2 font-semibold">{currencySymbol}{(invoice.total_amount || 0).toLocaleString()}</td>
+                <td className="py-4 px-2 font-semibold">{currencySymbol}{parseFloat(invoice.amount || 0).toLocaleString()}</td>
                 <td className="py-4 px-2">
                   <Badge className={getStatusColor(invoice.status)} variant="secondary">
                     {invoice.status}
