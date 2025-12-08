@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Download, Send, MoreVertical } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CreateInvoiceModal } from "@/components/dashboard/CreateInvoiceModal";
+import { ViewInvoiceDialog } from "@/components/dashboard/ViewInvoiceDialog";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,8 @@ import { useExchangeRates } from "@/hooks/useCurrency";
 
 const Dashboard = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const [sendingId, setSendingId] = useState<number | null>(null);
   const { user } = useAuth();
@@ -112,12 +115,22 @@ const Dashboard = () => {
     }
   };
 
-  const handleView = (invoiceId: number) => {
-    toast.info("View invoice details coming soon");
+  const handleView = async (invoice: any) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoice.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const fullInvoice = await response.json();
+      setSelectedInvoice(fullInvoice);
+      setIsViewDialogOpen(true);
+    } catch (error) {
+      toast.error("Failed to load invoice details");
+    }
   };
 
   const handleEdit = (invoiceId: number) => {
-    toast.info("Edit invoice coming soon");
+    navigate(`/dashboard/invoices/${invoiceId}/edit`);
   };
 
   const handleDelete = async (invoiceId: number) => {
@@ -297,7 +310,7 @@ const Dashboard = () => {
                                         </Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => handleView(invoice.id)}>View</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleView(invoice)}>View</DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleEdit(invoice.id)}>Edit</DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleDelete(invoice.id)} className="text-destructive">
                                           Delete
@@ -323,6 +336,11 @@ const Dashboard = () => {
       <CreateInvoiceModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
+      />
+      <ViewInvoiceDialog 
+        open={isViewDialogOpen} 
+        onOpenChange={setIsViewDialogOpen} 
+        invoice={selectedInvoice} 
       />
     </SidebarProvider>
   );
