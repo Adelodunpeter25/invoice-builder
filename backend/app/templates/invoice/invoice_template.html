@@ -66,9 +66,9 @@
                 {% for item in line_items %}
                 <tr>
                     <td class="description-cell">{{ item.description }}</td>
-                    <td class="price-cell">{{ currency_symbol }}{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td class="price-cell">{{ currency_symbol }}{{ item.unit_price|format_currency }}</td>
                     <td class="qty-cell">{{ item.quantity }}</td>
-                    <td class="price-cell">{{ currency_symbol }}{{ "%.2f"|format(item.total_price) }}</td>
+                    <td class="price-cell">{{ currency_symbol }}{{ item.total_price|format_currency }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -76,21 +76,9 @@
         
         <div class="totals">
             <div class="totals-block">
-                <div class="total-row">
-                    <span>Subtotal</span>
-                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.subtotal) }}</span>
-                </div>
-                <div class="total-row">
-                    <span>Discount</span>
-                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.discount_amount) }}</span>
-                </div>
-                <div class="total-row">
-                    <span>Tax</span>
-                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.tax_amount) }}</span>
-                </div>
                 <div class="total-row grand-total">
                     <span>Total</span>
-                    <span>{{ currency_symbol }}{{ "%.2f"|format(invoice.total_amount) }}</span>
+                    <span>{{ currency_symbol }}{{ invoice.amount|format_currency }}</span>
                 </div>
             </div>
         </div>
