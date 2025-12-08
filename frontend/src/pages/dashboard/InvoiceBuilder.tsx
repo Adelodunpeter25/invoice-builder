@@ -196,7 +196,7 @@ export default function InvoiceBuilder() {
           <div className="flex-1 flex">
             {/* Preview - Left Side */}
             <div className="w-1/2 p-6 bg-muted/30 overflow-auto">
-              <Card className="max-w-2xl mx-auto p-8 bg-white">
+              <Card className="max-w-2xl mx-auto p-8">
                 {/* Template 1 - Modern */}
                 {(!templateId || templateId === "1") && (
                   <>
@@ -315,7 +315,7 @@ export default function InvoiceBuilder() {
                     </div>
 
                     <table className="w-full mb-8">
-                      <thead className="bg-gray-900 text-white">
+                      <thead className="bg-primary text-primary-foreground">
                         <tr className="text-left text-sm">
                           <th className="p-3">Items</th>
                           <th className="p-3">Quantity</th>
@@ -388,7 +388,7 @@ export default function InvoiceBuilder() {
                     </div>
 
                     <table className="w-full mb-8">
-                      <thead className="border-b-2 border-black">
+                      <thead className="border-b-2 border-foreground">
                         <tr className="text-left text-xs font-bold tracking-wider">
                           <th className="pb-3">DESCRIPTION</th>
                           <th className="pb-3 text-center">PRICE</th>
@@ -398,7 +398,7 @@ export default function InvoiceBuilder() {
                       </thead>
                       <tbody>
                         {lineItems.map((item, i) => (
-                          <tr key={i} className="border-b-2 border-black">
+                          <tr key={i} className="border-b-2 border-foreground">
                             <td className="py-4">{item.description || "Item description"}</td>
                             <td className="py-4 text-center">{currencySymbol}{item.unit_price.toFixed(2)}</td>
                             <td className="py-4 text-center">{item.quantity}</td>
@@ -422,7 +422,7 @@ export default function InvoiceBuilder() {
                           <span className="text-right">Tax</span>
                           <span className="text-right">{currencySymbol}{taxAmount.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between font-bold text-lg border-t-2 border-black pt-3">
+                        <div className="flex justify-between font-bold text-lg border-t-2 border-foreground pt-3">
                           <span className="text-right">Total</span>
                           <span className="text-right">{currencySymbol}{total.toFixed(2)}</span>
                         </div>
