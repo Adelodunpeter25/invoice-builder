@@ -33,16 +33,25 @@ const Invoices = () => {
   
   const { user } = useAuth();
   const { data: allInvoices, isLoading } = useInvoices({});
-  const { data: draftInvoices } = useInvoices({ status: "draft" });
-  const { data: sentInvoices } = useInvoices({ status: "sent" });
-  const { data: paidInvoices } = useInvoices({ status: "paid" });
-  const { data: overdueInvoices } = useInvoices({ status: "overdue" });
   const deleteInvoice = useDeleteInvoice();
   const cloneInvoice = useCloneInvoice();
 
   const currencySymbol = getCurrencySymbol(user?.preferred_currency || 'NGN');
   const userCurrency = user?.preferred_currency || 'NGN';
-  const invoices = allInvoices?.items || [];
+  const allInvoicesList = allInvoices?.items || [];
+
+  // Filter invoices locally instead of making separate API calls
+  const draftInvoices = allInvoicesList.filter((inv: any) => inv.status === 'draft');
+  const sentInvoices = allInvoicesList.filter((inv: any) => inv.status === 'sent');
+  const paidInvoices = allInvoicesList.filter((inv: any) => inv.status === 'paid');
+  const overdueInvoices = allInvoicesList.filter((inv: any) => inv.status === 'overdue');
+
+  // Get invoices based on active tab
+  const invoices = activeTab === 'all' ? allInvoicesList :
+                   activeTab === 'draft' ? draftInvoices :
+                   activeTab === 'sent' ? sentInvoices :
+                   activeTab === 'paid' ? paidInvoices :
+                   activeTab === 'overdue' ? overdueInvoices : allInvoicesList;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -226,11 +235,11 @@ const Invoices = () => {
                 <CardContent>
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="mb-4">
-                      <TabsTrigger value="all">All ({invoices.length})</TabsTrigger>
-                      <TabsTrigger value="draft">Draft ({draftInvoices?.items.length || 0})</TabsTrigger>
-                      <TabsTrigger value="sent">Sent ({sentInvoices?.items.length || 0})</TabsTrigger>
-                      <TabsTrigger value="paid">Paid ({paidInvoices?.items.length || 0})</TabsTrigger>
-                      <TabsTrigger value="overdue">Overdue ({overdueInvoices?.items.length || 0})</TabsTrigger>
+                      <TabsTrigger value="all">All ({allInvoicesList.length})</TabsTrigger>
+                      <TabsTrigger value="draft">Draft ({draftInvoices.length})</TabsTrigger>
+                      <TabsTrigger value="sent">Sent ({sentInvoices.length})</TabsTrigger>
+                      <TabsTrigger value="paid">Paid ({paidInvoices.length})</TabsTrigger>
+                      <TabsTrigger value="overdue">Overdue ({overdueInvoices.length})</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="all">
