@@ -42,9 +42,9 @@
         <div class="header">
             <div></div>
             <div class="header-right">
-                <div class="invoice-title">INVOICE</div>
+                <div class="invoice-title">{{ user.company_name or user.username }}</div>
                 <div class="company-info">
-                    {{ user.company_name or user.username }}<br>
+                    Invoice #{{ invoice.invoice_number }}<br>
                     {{ user.email or '' }}<br>
                     {{ user.company_phone or '' }}<br>
                     {{ user.company_address or '' }}

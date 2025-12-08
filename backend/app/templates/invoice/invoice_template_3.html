@@ -39,7 +39,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="invoice-title">INVOICE</div>
+        <div class="invoice-title">{{ (user.company_name or user.username).upper() }}</div>
         
         <div class="header-row">
             <div class="header-left">

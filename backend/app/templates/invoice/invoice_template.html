@@ -36,8 +36,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="invoice-title">INVOICE</div>
-            <div class="invoice-meta">Invoice No. {{ invoice.invoice_number }} Due: {{ invoice.due_date.strftime('%b %d %Y') }}</div>
+            <div class="invoice-title">{{ user.company_name or user.username }}</div>
+            <div class="invoice-meta">Invoice No. {{ invoice.invoice_number }} | Due: {{ invoice.due_date.strftime('%b %d %Y') }}</div>
         </div>
         
         <div class="info-section">
