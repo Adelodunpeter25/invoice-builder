@@ -29,6 +29,7 @@ const App = () => (
             <Route path="/dashboard/clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
             <Route path="/dashboard/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
             <Route path="/dashboard/invoices/new" element={<ProtectedRoute><InvoiceBuilder /></ProtectedRoute>} />
+            <Route path="/dashboard/invoices/:id/edit" element={<ProtectedRoute><InvoiceBuilder /></ProtectedRoute>} />
             <Route path="/dashboard/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

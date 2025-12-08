@@ -7,7 +7,6 @@ import { Plus, Download, Send, MoreVertical, Eye, Edit, Trash, Copy } from "luci
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CreateInvoiceModal } from "@/components/dashboard/CreateInvoiceModal";
 import { ViewInvoiceDialog } from "@/components/dashboard/ViewInvoiceDialog";
-import { EditInvoiceModal } from "@/components/dashboard/EditInvoiceModal";
 import { DeleteInvoiceDialog } from "@/components/dashboard/DeleteInvoiceDialog";
 import { SendInvoiceModal } from "@/components/dashboard/SendInvoiceModal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -25,7 +24,6 @@ const Invoices = () => {
   const navigate = useNavigate();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
@@ -102,8 +100,7 @@ const Invoices = () => {
   };
 
   const handleEdit = (invoice: any) => {
-    setSelectedInvoice(invoice);
-    setIsEditModalOpen(true);
+    navigate(`/dashboard/invoices/${invoice.id}/edit`);
   };
 
   const handleClone = async (invoice: any) => {
@@ -273,7 +270,6 @@ const Invoices = () => {
 
       <CreateInvoiceModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
       <ViewInvoiceDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} invoice={selectedInvoice} />
-      <EditInvoiceModal open={isEditModalOpen} onOpenChange={setIsEditModalOpen} invoice={selectedInvoice} />
       <DeleteInvoiceDialog 
         open={isDeleteDialogOpen} 
         onOpenChange={setIsDeleteDialogOpen} 

@@ -8,21 +8,25 @@ import { Card } from "@/components/ui/card";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft, Plus, Trash } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useClients } from "@/hooks/useClients";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCurrencySymbol } from "@/lib/currency";
+import { get } from "@/lib/api";
 
 interface LineItem {
   description: string;
   quantity: number;
   unit_price: number;
+  tax_rate?: number;
 }
 
 export default function InvoiceBuilder() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { id } = useParams();
+  const isEditMode = !!id;
   const { user } = useAuth();
   const { data: clientsData } = useClients(1, 100);
   const clients = clientsData?.items || [];
@@ -32,12 +36,48 @@ export default function InvoiceBuilder() {
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState("");
   const [notes, setNotes] = useState("");
+  const [paymentTerms, setPaymentTerms] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [lineItems, setLineItems] = useState<LineItem[]>([
-    { description: "", quantity: 1, unit_price: 0 }
+    { description: "", quantity: 1, unit_price: 0, tax_rate: 0 }
   ]);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Load invoice data in edit mode
+  useEffect(() => {
+    if (isEditMode && id) {
+      const loadInvoice = async () => {
+        try {
+          setIsLoading(true);
+          const token = localStorage.getItem('access_token');
+          const invoice = await get<any>(`/api/v1/invoices/${id}`, token);
+          
+          setClientId(invoice.client_id.toString());
+          setIssueDate(invoice.issue_date);
+          setDueDate(invoice.due_date);
+          setNotes(invoice.notes || "");
+          setPaymentTerms(invoice.payment_terms || "");
+          
+          if (invoice.line_items && invoice.line_items.length > 0) {
+            setLineItems(invoice.line_items.map((item: any) => ({
+              description: item.description,
+              quantity: parseFloat(item.quantity),
+              unit_price: parseFloat(item.unit_price),
+              tax_rate: parseFloat(item.tax_rate || 0)
+            })));
+          }
+        } catch (error) {
+          toast.error("Failed to load invoice");
+          navigate('/dashboard/invoices');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadInvoice();
+    }
+  }, [isEditMode, id, navigate]);
 
   useEffect(() => {
     const template = searchParams.get('template');
