@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,17 +41,23 @@ const Invoices = () => {
   const allInvoicesList = allInvoices?.items || [];
 
   // Filter invoices locally instead of making separate API calls
-  const draftInvoices = allInvoicesList.filter((inv: any) => inv.status === 'draft');
-  const sentInvoices = allInvoicesList.filter((inv: any) => inv.status === 'sent');
-  const paidInvoices = allInvoicesList.filter((inv: any) => inv.status === 'paid');
-  const overdueInvoices = allInvoicesList.filter((inv: any) => inv.status === 'overdue');
+  const { draftInvoices, sentInvoices, paidInvoices, overdueInvoices } = useMemo(() => ({
+    draftInvoices: allInvoicesList.filter((inv: any) => inv.status === 'draft'),
+    sentInvoices: allInvoicesList.filter((inv: any) => inv.status === 'sent'),
+    paidInvoices: allInvoicesList.filter((inv: any) => inv.status === 'paid'),
+    overdueInvoices: allInvoicesList.filter((inv: any) => inv.status === 'overdue'),
+  }), [allInvoicesList]);
 
   // Get invoices based on active tab
-  const invoices = activeTab === 'all' ? allInvoicesList :
-                   activeTab === 'draft' ? draftInvoices :
-                   activeTab === 'sent' ? sentInvoices :
-                   activeTab === 'paid' ? paidInvoices :
-                   activeTab === 'overdue' ? overdueInvoices : allInvoicesList;
+  const invoices = useMemo(() => {
+    switch (activeTab) {
+      case 'draft': return draftInvoices;
+      case 'sent': return sentInvoices;
+      case 'paid': return paidInvoices;
+      case 'overdue': return overdueInvoices;
+      default: return allInvoicesList;
+    }
+  }, [activeTab, allInvoicesList, draftInvoices, sentInvoices, paidInvoices, overdueInvoices]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
