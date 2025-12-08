@@ -19,6 +19,8 @@ import { useExchangeRates } from "@/hooks/useCurrency";
 
 const Dashboard = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [sendingId, setSendingId] = useState<number | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: invoicesData, isLoading } = useInvoices({ page: 1, page_size: 5 });
@@ -72,6 +74,7 @@ const Dashboard = () => {
 
   const handleDownload = async (invoiceId: number, invoiceNumber: string) => {
     try {
+      setDownloadingId(invoiceId);
       const token = localStorage.getItem('access_token');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoiceId}/pdf`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -88,11 +91,14 @@ const Dashboard = () => {
       toast.success("Invoice downloaded successfully!");
     } catch (error) {
       toast.error("Failed to download invoice");
+    } finally {
+      setDownloadingId(null);
     }
   };
 
   const handleSend = async (invoiceId: number) => {
     try {
+      setSendingId(invoiceId);
       const token = localStorage.getItem('access_token');
       await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoiceId}/send`, {
         method: 'POST',
@@ -101,6 +107,8 @@ const Dashboard = () => {
       toast.success("Invoice sent successfully!");
     } catch (error) {
       toast.error("Failed to send invoice");
+    } finally {
+      setSendingId(null);
     }
   };
 
@@ -269,16 +277,18 @@ const Dashboard = () => {
                                       size="icon" 
                                       className="h-7 w-7 sm:h-8 sm:w-8"
                                       onClick={() => handleDownload(invoice.id, invoice.invoice_number)}
+                                      disabled={downloadingId === invoice.id}
                                     >
-                                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                                      <Download className={`w-3 h-3 sm:w-4 sm:h-4 ${downloadingId === invoice.id ? 'animate-pulse' : ''}`} />
                                     </Button>
                                     <Button 
                                       variant="ghost" 
                                       size="icon" 
                                       className="h-7 w-7 sm:h-8 sm:w-8"
                                       onClick={() => handleSend(invoice.id)}
+                                      disabled={sendingId === invoice.id}
                                     >
-                                      <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+                                      <Send className={`w-3 h-3 sm:w-4 sm:h-4 ${sendingId === invoice.id ? 'animate-pulse' : ''}`} />
                                     </Button>
                                     <DropdownMenu>
                                       <DropdownMenuTrigger asChild>
