@@ -25,7 +25,7 @@ async def download_invoice_pdf(
     client = await get_client_by_id(db, user_id, invoice.client_id)
     user = await get_user_by_id(db, user_id)
     
-    pdf_bytes = generate_invoice_pdf(invoice, client, user)
+    pdf_bytes = generate_invoice_pdf(invoice, client, user, invoice.template_name)
     
     return Response(
         content=pdf_bytes,
@@ -47,7 +47,7 @@ async def send_invoice(
     client = await get_client_by_id(db, user_id, invoice.client_id)
     user = await get_user_by_id(db, user_id)
     
-    pdf_bytes = generate_invoice_pdf(invoice, client, user)
+    pdf_bytes = generate_invoice_pdf(invoice, client, user, invoice.template_name)
     
     success = await send_invoice_email(
         invoice=invoice,

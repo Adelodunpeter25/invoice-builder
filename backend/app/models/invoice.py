@@ -22,6 +22,7 @@ class Invoice(Base):
     status: Mapped[InvoiceStatus] = mapped_column(Enum(InvoiceStatus), default=InvoiceStatus.DRAFT)
     currency: Mapped[Currency] = mapped_column(Enum(Currency), default=Currency.USD)
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0)
+    template_name: Mapped[str] = mapped_column(String(100), default="invoice_template.html", nullable=True)
     issue_date: Mapped[date] = mapped_column(Date)
     due_date: Mapped[date] = mapped_column(Date)
     payment_terms: Mapped[str] = mapped_column(Text, nullable=True)

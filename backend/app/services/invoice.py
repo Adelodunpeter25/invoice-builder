@@ -46,6 +46,7 @@ async def create_invoice(db: AsyncSession, user_id: int, data: InvoiceCreate) ->
         issue_date=data.issue_date,
         due_date=data.due_date,
         currency=data.currency,
+        template_name=data.template_name,
         payment_terms=data.payment_terms,
         notes=data.notes,
         status=InvoiceStatus.DRAFT,

@@ -60,6 +60,7 @@ class InvoiceCreate(BaseModel):
     issue_date: date
     due_date: date
     currency: Currency = Currency.USD
+    template_name: str = "invoice_template.html"
     payment_terms: str | None = None
     notes: str | None = None
     line_items: list[LineItemCreate]
@@ -96,6 +97,7 @@ class InvoiceUpdate(BaseModel):
     issue_date: date | None = None
     due_date: date | None = None
     currency: Currency | None = None
+    template_name: str | None = None
     payment_terms: str | None = None
     notes: str | None = None
     line_items: list[LineItemCreate] | None = None
@@ -122,6 +124,7 @@ class InvoiceResponse(BaseModel):
     status: InvoiceStatus
     currency: Currency
     amount: Decimal
+    template_name: str
     issue_date: date
     due_date: date
     payment_terms: str | None
@@ -144,6 +147,7 @@ class InvoiceListResponse(BaseModel):
     status: InvoiceStatus
     currency: Currency
     amount: Decimal
+    template_name: str
     issue_date: date
     due_date: date
     created_at: datetime

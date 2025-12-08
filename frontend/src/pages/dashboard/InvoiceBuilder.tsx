@@ -61,6 +61,14 @@ export default function InvoiceBuilder() {
           setNotes(invoice.notes || "");
           setPaymentTerms(invoice.payment_terms || "");
           
+          // Map template filename back to ID
+          const templateReverseMap: Record<string, string> = {
+            "invoice_template.html": "1",
+            "invoice_template_2.html": "2",
+            "invoice_template_3.html": "3",
+          };
+          setTemplateId(templateReverseMap[invoice.template_name] || "1");
+          
           if (invoice.line_items && invoice.line_items.length > 0) {
             setLineItems(invoice.line_items.map((item: any) => ({
               description: item.description,
@@ -120,6 +128,13 @@ export default function InvoiceBuilder() {
       
       const method = isEditMode ? 'PUT' : 'POST';
       
+      // Map template ID to template filename
+      const templateMap: Record<string, string> = {
+        "1": "invoice_template.html",
+        "2": "invoice_template_2.html",
+        "3": "invoice_template_3.html",
+      };
+      
       const response = await fetch(url, {
         method,
         headers: {
@@ -131,6 +146,7 @@ export default function InvoiceBuilder() {
           issue_date: issueDate,
           due_date: dueDate,
           currency: user?.preferred_currency || 'NGN',
+          template_name: templateId ? templateMap[templateId] : "invoice_template.html",
           notes: notes || undefined,
           payment_terms: paymentTerms || undefined,
           line_items: lineItems.map(item => ({
