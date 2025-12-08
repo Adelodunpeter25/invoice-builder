@@ -13,7 +13,7 @@ import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useClients } from "@/hooks/useClients";
 import { useAuth } from "@/contexts/AuthContext";
-import { getCurrencySymbol } from "@/lib/currency";
+import { getCurrencySymbol, formatCurrency } from "@/lib/currency";
 import { get } from "@/lib/api";
 
 interface LineItem {
@@ -227,8 +227,8 @@ export default function InvoiceBuilder() {
                           <tr key={i} className="border-b border-border">
                             <td className="py-3">{item.description || "Item description"}</td>
                             <td className="py-3 text-center">{item.quantity}</td>
-                            <td className="py-3 text-right">{currencySymbol}{item.unit_price.toFixed(2)}</td>
-                            <td className="py-3 text-right">{currencySymbol}{(item.quantity * item.unit_price).toFixed(2)}</td>
+                            <td className="py-3 text-right">{currencySymbol}{formatCurrency(item.unit_price)}</td>
+                            <td className="py-3 text-right">{currencySymbol}{formatCurrency(item.quantity * item.unit_price)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -238,19 +238,19 @@ export default function InvoiceBuilder() {
                       <div className="w-64 space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Subtotal:</span>
-                          <span>{currencySymbol}{subtotal.toFixed(2)}</span>
+                          <span>{currencySymbol}{formatCurrency(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span>Discount:</span>
-                          <span>-{currencySymbol}{discountAmount.toFixed(2)}</span>
+                          <span>-{currencySymbol}{formatCurrency(discountAmount)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span>Tax:</span>
-                          <span>{currencySymbol}{taxAmount.toFixed(2)}</span>
+                          <span>{currencySymbol}{formatCurrency(taxAmount)}</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg border-t-2 border-border pt-2">
                           <span>Total:</span>
-                          <span>{currencySymbol}{total.toFixed(2)}</span>
+                          <span>{currencySymbol}{formatCurrency(total)}</span>
                         </div>
                       </div>
                     </div>
@@ -312,8 +312,8 @@ export default function InvoiceBuilder() {
                           <tr key={i} className="border-b">
                             <td className="py-3">{item.description || "Item description"}</td>
                             <td className="py-3 text-center">{item.quantity}</td>
-                            <td className="py-3 text-right">{currencySymbol}{item.unit_price.toFixed(2)}</td>
-                            <td className="py-3 text-right font-medium">{currencySymbol}{(item.quantity * item.unit_price).toFixed(2)}</td>
+                            <td className="py-3 text-right">{currencySymbol}{formatCurrency(item.unit_price)}</td>
+                            <td className="py-3 text-right font-medium">{currencySymbol}{formatCurrency(item.quantity * item.unit_price)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -323,11 +323,11 @@ export default function InvoiceBuilder() {
                       <div className="w-64 space-y-3">
                         <div className="flex justify-between text-sm">
                           <span>Subtotal:</span>
-                          <span>{currencySymbol}{subtotal.toFixed(2)}</span>
+                          <span>{currencySymbol}{formatCurrency(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span>Discount:</span>
-                          <span>{currencySymbol}{discountAmount.toFixed(2)}</span>
+                          <span>{currencySymbol}{formatCurrency(discountAmount)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span>Tax:</span>

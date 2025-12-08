@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 
 interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
   value: number;
@@ -8,14 +8,20 @@ interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
   ({ value, onChange, ...props }, ref) => {
-    const [displayValue, setDisplayValue] = useState(formatNumber(value));
-
-    function formatNumber(num: number): string {
-      if (isNaN(num) || num === 0) return '';
-      return new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-      }).format(num);
+    function formatNumber(num: string): string {
+      // Remove all non-digit and non-decimal characters
+      const cleaned = num.replace(/[^\d.]/g, '');
+      
+      // Split into integer and decimal parts
+      const parts = cleaned.split('.');
+      const integerPart = parts[0];
+      const decimalPart = parts[1];
+      
+      // Format integer part with commas
+      const formatted = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      
+      // Return with decimal if exists
+      return decimalPart !== undefined ? `${formatted}.${decimalPart}` : formatted;
     }
 
     function parseNumber(str: string): number {
@@ -26,25 +32,27 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const input = e.target.value;
-      const numValue = parseNumber(input);
+      const cursorPosition = e.target.selectionStart || 0;
+      const oldLength = e.target.value.length;
       
+      // Format the input
+      const formatted = formatNumber(input);
+      
+      // Parse and update value
+      const numValue = parseNumber(formatted);
       onChange(numValue);
-      setDisplayValue(input);
+      
+      // Restore cursor position accounting for added commas
+      setTimeout(() => {
+        if (e.target) {
+          const newLength = formatted.length;
+          const diff = newLength - oldLength;
+          e.target.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+        }
+      }, 0);
     };
 
-    const handleBlur = () => {
-      setDisplayValue(formatNumber(value));
-    };
-
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-      // Show raw number on focus for easier editing
-      if (value === 0) {
-        setDisplayValue('');
-      } else {
-        setDisplayValue(value.toString());
-      }
-      e.target.select();
-    };
+    const displayValue = value === 0 ? '' : formatNumber(value.toString());
 
     return (
       <Input
@@ -54,8 +62,6 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
         inputMode="decimal"
         value={displayValue}
         onChange={handleChange}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
       />
     );
   }

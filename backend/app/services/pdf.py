@@ -24,6 +24,12 @@ def get_currency_symbol(currency: str) -> str:
     return symbols.get(currency, currency)
 
 
+def format_currency(amount: float) -> str:
+    """Format currency with commas."""
+    return f"{amount:,.2f}"
+
+
+
 def generate_invoice_pdf(invoice: Invoice, client: Client, user: User, template_name: str = "invoice_template.html") -> bytes:
     """Generate PDF for an invoice."""
     buffer = BytesIO()
@@ -76,19 +82,19 @@ def generate_invoice_pdf(invoice: Invoice, client: Client, user: User, template_
         total_price = item.quantity * item.unit_price
         subtotal += total_price
         c.drawString(50, y, item.description[:30])
-        c.drawString(300, y, f"{currency_symbol}{item.unit_price:.2f}")
+        c.drawString(300, y, f"{currency_symbol}{format_currency(float(item.unit_price))}")
         c.drawString(400, y, str(item.quantity))
-        c.drawString(500, y, f"{currency_symbol}{total_price:.2f}")
+        c.drawString(500, y, f"{currency_symbol}{format_currency(float(total_price))}")
         y -= 25
     
     # Totals
     y -= 30
     c.drawString(400, y, "Subtotal")
-    c.drawString(500, y, f"{currency_symbol}{subtotal:.2f}")
+    c.drawString(500, y, f"{currency_symbol}{format_currency(float(subtotal))}")
     
     y -= 20
     c.drawString(400, y, "Total")
-    c.drawString(500, y, f"{currency_symbol}{invoice.amount:.2f}")
+    c.drawString(500, y, f"{currency_symbol}{format_currency(float(invoice.amount))}")
     
     # Notes
     if invoice.notes:
