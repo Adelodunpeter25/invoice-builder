@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft, Plus, Trash } from "lucide-react";
@@ -486,11 +487,10 @@ export default function InvoiceBuilder() {
                               value={item.quantity}
                               onChange={(e) => updateLineItem(index, 'quantity', parseFloat(e.target.value) || 0)}
                             />
-                            <Input
-                              type="number"
+                            <CurrencyInput
                               placeholder="Price"
                               value={item.unit_price}
-                              onChange={(e) => updateLineItem(index, 'unit_price', parseFloat(e.target.value) || 0)}
+                              onChange={(value) => updateLineItem(index, 'unit_price', value)}
                             />
                           </div>
                         </div>
@@ -507,18 +507,16 @@ export default function InvoiceBuilder() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Discount</Label>
-                    <Input
-                      type="number"
+                    <CurrencyInput
                       value={discountAmount}
-                      onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
+                      onChange={setDiscountAmount}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>Tax</Label>
-                    <Input
-                      type="number"
+                    <CurrencyInput
                       value={taxAmount}
-                      onChange={(e) => setTaxAmount(parseFloat(e.target.value) || 0)}
+                      onChange={setTaxAmount}
                     />
                   </div>
                 </div>
