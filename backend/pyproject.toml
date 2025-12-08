@@ -20,6 +20,7 @@ dependencies = [
     "resend>=2.19.0",
     "sqlalchemy>=2.0.44",
     "uvicorn>=0.38.0",
+    "weasyprint>=63.1",
 ]
 
 [dependency-groups]
