@@ -9,10 +9,17 @@ export interface LineItem {
   tax_rate: number;
 }
 
+export interface ClientBasic {
+  id: number;
+  name: string;
+  email: string;
+}
+
 export interface Invoice {
   id: number;
   user_id: number;
   client_id: number;
+  client: ClientBasic;
   invoice_number: string;
   status: InvoiceStatus;
   currency: Currency;

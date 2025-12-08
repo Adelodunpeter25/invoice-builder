@@ -62,7 +62,7 @@ async def create_invoice(db: AsyncSession, user_id: int, data: InvoiceCreate) ->
     
     invoice.amount = calculate_invoice_amount(line_items)
     await db.flush()
-    await db.refresh(invoice, ["line_items"])
+    await db.refresh(invoice, ["line_items", "client"])
     
     return invoice
 
@@ -77,7 +77,8 @@ async def get_invoices(
     end_date: date | None = None,
 ) -> tuple[list[Invoice], int]:
     """Get paginated list of invoices for a user."""
-    query = select(Invoice).where(Invoice.user_id == user_id)
+    query = select(Invoice).options(selectinload(Invoice.client)).where(Invoice.user_id == user_id)
+    count_query = select(func.count()).select_from(Invoice).where(Invoice.user_id == user_id)
     count_query = select(func.count()).select_from(Invoice).where(Invoice.user_id == user_id)
     
     if status:
@@ -110,7 +111,7 @@ async def get_invoice_by_id(db: AsyncSession, user_id: int, invoice_id: int) -> 
     """Get an invoice by ID with line items."""
     result = await db.execute(
         select(Invoice)
-        .options(selectinload(Invoice.line_items))
+        .options(selectinload(Invoice.line_items), selectinload(Invoice.client))
         .where(Invoice.id == invoice_id)
     )
     invoice = result.scalar_one_or_none()

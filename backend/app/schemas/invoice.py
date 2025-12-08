@@ -101,12 +101,23 @@ class InvoiceUpdate(BaseModel):
     line_items: list[LineItemCreate] | None = None
 
 
+class ClientBasic(BaseModel):
+    """Basic client info for invoice response."""
+
+    id: int
+    name: str
+    email: str
+
+    model_config = {"from_attributes": True}
+
+
 class InvoiceResponse(BaseModel):
     """Invoice response schema."""
 
     id: int
     user_id: int
     client_id: int
+    client: ClientBasic
     invoice_number: str
     status: InvoiceStatus
     currency: Currency
@@ -128,6 +139,7 @@ class InvoiceListResponse(BaseModel):
     id: int
     user_id: int
     client_id: int
+    client: ClientBasic
     invoice_number: str
     status: InvoiceStatus
     currency: Currency
