@@ -252,16 +252,16 @@ const Invoices = () => {
                       <InvoiceTable invoices={invoices} />
                     </TabsContent>
                     <TabsContent value="draft">
-                      <InvoiceTable invoices={draftInvoices?.items || []} />
+                      <InvoiceTable invoices={draftInvoices} />
                     </TabsContent>
                     <TabsContent value="sent">
-                      <InvoiceTable invoices={sentInvoices?.items || []} />
+                      <InvoiceTable invoices={sentInvoices} />
                     </TabsContent>
                     <TabsContent value="paid">
-                      <InvoiceTable invoices={paidInvoices?.items || []} />
+                      <InvoiceTable invoices={paidInvoices} />
                     </TabsContent>
                     <TabsContent value="overdue">
-                      <InvoiceTable invoices={overdueInvoices?.items || []} />
+                      <InvoiceTable invoices={overdueInvoices} />
                     </TabsContent>
                   </Tabs>
                 </CardContent>
