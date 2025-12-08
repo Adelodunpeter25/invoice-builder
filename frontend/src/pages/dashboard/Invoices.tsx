@@ -28,6 +28,8 @@ const Invoices = () => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [sendingId, setSendingId] = useState<number | null>(null);
   
   const { user } = useAuth();
   const { data: allInvoices, isLoading } = useInvoices({});
@@ -70,6 +72,7 @@ const Invoices = () => {
 
   const handleDownload = async (invoice: any) => {
     try {
+      setDownloadingId(invoice.id);
       const token = localStorage.getItem('access_token');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices/${invoice.id}/pdf`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -86,12 +89,22 @@ const Invoices = () => {
       toast.success(`Downloaded ${invoice.invoice_number}`);
     } catch (error) {
       toast.error("Failed to download invoice");
+    } finally {
+      setDownloadingId(null);
     }
   };
 
   const handleSend = (invoice: any) => {
+    setSendingId(invoice.id);
     setSelectedInvoice(invoice);
     setIsSendModalOpen(true);
+  };
+
+  const handleSendModalClose = (open: boolean) => {
+    setIsSendModalOpen(open);
+    if (!open) {
+      setSendingId(null);
+    }
   };
 
   const handleView = (invoice: any) => {
@@ -168,11 +181,23 @@ const Invoices = () => {
                 </td>
                 <td className="py-4 px-2">
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleDownload(invoice)}>
-                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 sm:h-8 sm:w-8" 
+                      onClick={() => handleDownload(invoice)}
+                      disabled={downloadingId === invoice.id}
+                    >
+                      <Download className={`w-3 h-3 sm:w-4 sm:h-4 ${downloadingId === invoice.id ? 'animate-pulse' : ''}`} />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={() => handleSend(invoice)}>
-                      <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 sm:h-8 sm:w-8" 
+                      onClick={() => handleSend(invoice)}
+                      disabled={sendingId === invoice.id}
+                    >
+                      <Send className={`w-3 h-3 sm:w-4 sm:h-4 ${sendingId === invoice.id ? 'animate-pulse' : ''}`} />
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -278,7 +303,7 @@ const Invoices = () => {
       />
       <SendInvoiceModal 
         open={isSendModalOpen} 
-        onOpenChange={setIsSendModalOpen} 
+        onOpenChange={handleSendModalClose} 
         invoiceId={selectedInvoice?.id || 0}
         clientEmail={selectedInvoice?.client?.email}
       />
