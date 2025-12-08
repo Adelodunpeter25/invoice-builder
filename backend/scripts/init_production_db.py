@@ -1,5 +1,6 @@
 """Initialize production database with admin user."""
 
+import os
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +8,7 @@ from app.core.database import Base
 from app.models import User
 from app.utils.auth import hash_password
 
-DATABASE_URL = "postgresql+asyncpg://postgres:4rZ52cjS3j13QXPoohnli2mrMGxoHnd03dmJEw8sIvJt7QvKD7Ih8hIbALuW31YY@149.102.159.118:34453/postgres"
+DATABASE_URL = os.getenv('PROD_DB_URL') 
 
 async def init_db():
     """Create all database tables and admin user."""
