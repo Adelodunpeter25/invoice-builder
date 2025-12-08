@@ -114,8 +114,14 @@ export default function InvoiceBuilder() {
 
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/invoices`, {
-        method: 'POST',
+      const url = isEditMode 
+        ? `${import.meta.env.VITE_API_URL}/api/v1/invoices/${id}`
+        : `${import.meta.env.VITE_API_URL}/api/v1/invoices`;
+      
+      const method = isEditMode ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -126,14 +132,12 @@ export default function InvoiceBuilder() {
           due_date: dueDate,
           currency: user?.preferred_currency || 'NGN',
           notes: notes || undefined,
-          discount_amount: discountAmount,
-          tax_amount: taxAmount,
-          template_id: templateId ? parseInt(templateId) : undefined,
+          payment_terms: paymentTerms || undefined,
           line_items: lineItems.map(item => ({
             description: item.description,
             quantity: item.quantity,
             unit_price: item.unit_price,
-            tax_rate: 0
+            tax_rate: item.tax_rate || 0
           }))
         })
       });
@@ -141,13 +145,13 @@ export default function InvoiceBuilder() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || 'Failed to create invoice');
+        throw new Error(data.detail || `Failed to ${isEditMode ? 'update' : 'create'} invoice`);
       }
 
-      toast.success("Invoice created successfully!");
+      toast.success(`Invoice ${isEditMode ? 'updated' : 'created'} successfully!`);
       navigate("/dashboard/invoices");
     } catch (error: any) {
-      toast.error(error.message || "Failed to create invoice");
+      toast.error(error.message || `Failed to ${isEditMode ? 'update' : 'create'} invoice`);
     }
   };
 
@@ -163,10 +167,12 @@ export default function InvoiceBuilder() {
               <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <h1 className="text-xl sm:text-2xl font-bold">Create Invoice</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">{isEditMode ? 'Edit Invoice' : 'Create Invoice'}</h1>
               <div className="ml-auto flex gap-2">
-                <Button variant="outline" onClick={() => navigate("/dashboard")}>Cancel</Button>
-                <Button onClick={handleSave}>Save Invoice</Button>
+                <Button variant="outline" onClick={() => navigate("/dashboard/invoices")}>Cancel</Button>
+                <Button onClick={handleSave} disabled={isLoading}>
+                  {isLoading ? 'Loading...' : isEditMode ? 'Update Invoice' : 'Save Invoice'}
+                </Button>
               </div>
             </div>
           </header>
